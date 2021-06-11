@@ -5,7 +5,8 @@ var baseDir;
 
 /* Init function: get canvas, compile and link shaders */
 async function init(){
-  
+    
+    var unused;
     //Set shaders path
     var path = window.location.pathname;
     var page = path.split("/").pop();
