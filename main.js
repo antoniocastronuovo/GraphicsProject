@@ -5,8 +5,7 @@ var baseDir;
 
 /* Init function: get canvas, compile and link shaders */
 async function init(){
-    
-    var unused;
+  
     //Set shaders path
     var path = window.location.pathname;
     var page = path.split("/").pop();
@@ -22,6 +21,12 @@ async function init(){
         return;
     }
 
+    utils.resizeCanvasToDisplaySize(gl.canvas);
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+    gl.clearColor(0.85, 0.85, 0.85, 1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    gl.enable(gl.DEPTH_TEST);
+
     /*await wait since the asynchronous funtion loadFiles is completed and when 
      * it is completed use the callback function passed as second argument.
      * Function createShader and createProgram do what we have seen in 03*/
@@ -35,19 +40,7 @@ async function init(){
     main();
 }
 
-function main() {
-    //Set autoresize for canvas
-    utils.resizeCanvasToDisplaySize(gl.canvas);
-    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-    gl.clearColor(0, 0, 0, 0); //canvas color
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT); //clear color buffer and depth buffer
-    gl.enable(gl.DEPTH_TEST); //enable depth testing
-    
-    drawScene();
-
-}
-
-function drawScene() {
+function main() {    
     //Define directional light
     var dirLightAlpha = -utils.degToRad(60);
     var dirLightBeta  = -utils.degToRad(120);
@@ -56,11 +49,10 @@ function drawScene() {
                 Math.sin(dirLightAlpha),
                 Math.cos(dirLightAlpha) * Math.sin(dirLightBeta)
                 ];
-    var directionalLightColor = [0.1, 1.0, 1.0];
+    var directionalLightColor = [1.0, 0.0, 0.0];
 
     //Define material color
     var cubeMaterialColor = [0.5, 0.5, 0.5];
-
 
     //Get attribute positions
     var positionAttributeLocation = gl.getAttribLocation(program, "inPosition");  
@@ -72,27 +64,20 @@ function drawScene() {
     var normalMatrixPositionHandle = gl.getUniformLocation(program, 'nMatrix');
 
     //Initilize and set WVP matrix
-    var worldMatrix = utils.MakeWorld(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10);
+    var worldMatrix = utils.MakeWorld( -3.0, 0.0, -1.5, 0.0, 0.0, 0.0, 0.5);
     var perspectiveMatrix = utils.MakePerspective(90, gl.canvas.width/gl.canvas.height, 0.1, 100.0);
     var viewMatrix = utils.MakeView(3.0, 3.0, 2.5, -45.0, -40.0);
-
-    var matrix = utils.multiplyMatrices(viewMatrix, worldMatrix);
-    matrix = utils.multiplyMatrices(matrix, perspectiveMatrix);
-    gl.uniformMatrix4fv(matrixLocation, gl.FALSE, utils.transposeMatrix(matrix));
-
-    //Set normal matrix
-    gl.uniformMatrix4fv(normalMatrixPositionHandle, gl.FALSE, utils.transposeMatrix(worldMatrix));
 
     //Create a vertex array object
     var vao = gl.createVertexArray();
     gl.bindVertexArray(vao);
     //All the calls to set up the VBOs are now stored in the currently-bound vao
+    //Now prepare the object with vertices, indices and normals buffers
     var positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
     gl.enableVertexAttribArray(positionAttributeLocation);
     gl.vertexAttribPointer(positionAttributeLocation, 3, gl.FLOAT, false, 0, 0);
-
 
     /*var colorBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
@@ -110,16 +95,31 @@ function drawScene() {
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW); 
 
-    //Draw scene
-    gl.clearColor(1.0, 1.0, 1.0, 1.0);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    drawScene();
+    //Draw scene, you can put it in a function
+    function drawScene() {
+        gl.clearColor(1.0, 1.0, 1.0, 1.0);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    gl.uniform3fv(materialDiffColorHandle, cubeMaterialColor);
-    gl.uniform3fv(lightColorHandle,  directionalLightColor);
-    gl.uniform3fv(lightDirectionHandle,  directionalLight);
+        //Set and pass VWP matrix
+        var matrix = utils.multiplyMatrices(viewMatrix, worldMatrix);
+        matrix = utils.multiplyMatrices(perspectiveMatrix, matrix);
+        gl.uniformMatrix4fv(matrixLocation, gl.FALSE, utils.transposeMatrix(matrix));
 
-    gl.bindVertexArray(vao);
-    gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
+        //Pass normal matrix
+        gl.uniformMatrix4fv(normalMatrixPositionHandle, gl.FALSE, utils.transposeMatrix(worldMatrix));
+
+        gl.uniform3fv(materialDiffColorHandle, cubeMaterialColor);
+        gl.uniform3fv(lightColorHandle,  directionalLightColor);
+        gl.uniform3fv(lightDirectionHandle,  directionalLight);
+
+        gl.bindVertexArray(vao);
+        gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
+    }
+
+    //window.requestAnimationFrame(drawScene);
+    
+    
 }
 
 window.onload = init;
