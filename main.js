@@ -16,7 +16,7 @@ var lookRadius = 10.0;
 //Transformation matrices
 var projectionMatrix, perspectiveMatrix, viewMatrix, worldMatrix;
 
-var mesh;
+var mesh, meshes;
 
 //Event handlers to rotate camera on mouse dragging
 var mouseState = false;
@@ -96,9 +96,18 @@ async function init(){
     });
     gl.useProgram(program);
 
-    var objStr = await utils.get_objstr(assetDir + "disc1.obj");
-    mesh = new OBJ.Mesh(objStr);
-    
+    meshes = [];
+    //The next line must be done in init, since it is an async function, load mesh using OBJ loader library
+    var objStr = await utils.get_objstr(assetDir + "base.obj");
+    meshes[0] = new OBJ.Mesh(objStr);
+    OBJ.initMeshBuffers(gl, meshes[0]);
+    for(let i=1; i<8; i++) {
+        //The next line must be done in init, since it is an async function, load mesh using OBJ loader library
+        objStr = await utils.get_objstr(assetDir + "disc" + i + ".obj");
+        meshes[i] = new OBJ.Mesh(objStr);
+        OBJ.initMeshBuffers(gl, meshes[i]);
+    }
+
     main();
 }
 
@@ -116,7 +125,10 @@ function main() {
     //Define material color
     var cubeMaterialColor = [0.5, 0.5, 0.5];
 
-    //Get attribute positions
+    //Initilize perspective matrix
+    perspectiveMatrix = utils.MakePerspective(90, gl.canvas.width/gl.canvas.height, 0.1, 100.0);
+
+    //Links mesh attributes to shader attributes
     var positionAttributeLocation = gl.getAttribLocation(program, "inPosition");  
     gl.enableVertexAttribArray(positionAttributeLocation);
     var normalAttributeLocation = gl.getAttribLocation(program, "inNormal");  
@@ -128,20 +140,8 @@ function main() {
     var lightColorHandle = gl.getUniformLocation(program, 'lightColor');
     var normalMatrixPositionHandle = gl.getUniformLocation(program, 'nMatrix');
 
-    OBJ.initMeshBuffers(gl, mesh);
-
-    //Initilize perspective matrix
-    worldMatrix = utils.MakeWorld(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0);
-    perspectiveMatrix = utils.MakePerspective(90, gl.canvas.width/gl.canvas.height, 0.1, 100.0);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, mesh.vertexBuffer);
-    gl.vertexAttribPointer(positionAttributeLocation, mesh.vertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
+    worldMatrix = utils.MakeWorld(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3);
     
-    gl.bindBuffer(gl.ARRAY_BUFFER, mesh.normalBuffer);
-    gl.vertexAttribPointer(normalAttributeLocation, mesh.normalBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh.indexBuffer);
-
     drawScene();
 
     function drawScene() {
@@ -152,9 +152,6 @@ function main() {
         viewMatrix = utils.MakeView(cx, cy, cz, elevation, -angle);
         projectionMatrix = utils.multiplyMatrices(perspectiveMatrix, viewMatrix);
     
-        //Bind vertex array
-        //gl.bindVertexArray(vao);
-    
         //Calculate World-View-Projection matrices
         var VWPmatrix = utils.multiplyMatrices(projectionMatrix, worldMatrix);
         gl.uniformMatrix4fv(matrixLocation, gl.FALSE, utils.transposeMatrix(VWPmatrix));
@@ -164,14 +161,31 @@ function main() {
         gl.uniform3fv(materialDiffColorHandle, cubeMaterialColor);
         gl.uniform3fv(lightColorHandle,  directionalLightColor);
         gl.uniform3fv(lightDirectionHandle,  directionalLight);
-    
-        //Draw elements
-        //gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
-        gl.drawElements(gl.TRIANGLES, mesh.indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+
+        drawMeshes();
+        
         //This function says: browser, I need to perform an animation so call
         //this function every time you need to refresh a frame
         window.requestAnimationFrame(drawScene);
     }
+
+    function drawMeshes() {
+        for(let i=0; i<8; i++) {
+            //This must be done for each object mesh
+            gl.bindBuffer(gl.ARRAY_BUFFER, meshes[i].vertexBuffer);
+            gl.vertexAttribPointer(positionAttributeLocation, meshes[i].vertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
+            
+            gl.bindBuffer(gl.ARRAY_BUFFER, meshes[i].normalBuffer);
+            gl.vertexAttribPointer(normalAttributeLocation, meshes[i].normalBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, meshes[i].indexBuffer);
+
+            //Draw elements
+            gl.drawElements(gl.LINE_STRIP, meshes[i].indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+
+        }
+    }
+
 }
 
 
