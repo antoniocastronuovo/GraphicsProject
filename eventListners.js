@@ -6,6 +6,13 @@
         displayAlert(false);
         game.initMove(moveFrom.value,moveTo.value);
     }, false);
+
+    var playBtn = document.getElementById("play_btn");
+    playBtn.addEventListener("click", (e) => {
+        var numOfDiscs = parseInt(document.getElementById("drop-down-difficulty").value);
+        game = new Game(nodes.slice(1, numOfDiscs + 1));
+        game.scaleMesurements(scaling);
+    }, false);
 };
 
 function displayAlert(bool) {

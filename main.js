@@ -22,6 +22,8 @@ var nodes = [];
 
 //The game
 var game;
+var initNumberOfDiscs = 4;
+this.maxNumberOfDiscs = 7;
 
 //Event handlers to rotate camera on mouse dragging
 var mouseState = false;
@@ -57,7 +59,7 @@ function doMouseWheel(event) {
 }
 
 /* Init function: get canvas, compile and link shaders */
-async function init(numberOfDiscs){
+async function init(){
     //Find the location of the directory
     var path = window.location.pathname;
     var page = path.split("/").pop();
@@ -114,7 +116,7 @@ async function init(numberOfDiscs){
     }
     nodes[0] = baseNode;
     
-    for(let i = 1; i < numberOfDiscs + 1; i++) {
+    for(let i = 1; i < maxNumberOfDiscs + 1; i++) {
         //The next line must be done in init, since it is an async function, load mesh using OBJ loader library
         objStr = await utils.get_objstr(assetDir + "disc" + i + ".obj");
         tmpMesh = new OBJ.Mesh(objStr);
@@ -133,7 +135,7 @@ async function init(numberOfDiscs){
 
     //Create the game
     var discNodes = this.nodes.slice(1);
-    game = new Game(discNodes.slice(0, numberOfDiscs));
+    game = new Game(discNodes.slice(0, initNumberOfDiscs));
     game.scaleMesurements(scaling);
 
     main();
@@ -188,9 +190,7 @@ function main() {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
         gl.generateMipmap(gl.TEXTURE_2D);
     }
-	
-    //This line aims only to try the movement
-    //game.initMove(1,2);
+
 
     drawScene();
 
@@ -217,7 +217,7 @@ function main() {
     }
 
     function drawObjects() {
-        nodes.forEach(node => {
+        nodes.slice(0, game.numberOfDiscs + 1).forEach(node => {
             //Calculate World-View-Projection matrix
             WVPmatrix = utils.multiplyMatrices(projectionMatrix, node.worldMatrix);
             gl.uniformMatrix4fv(matrixLocation, gl.FALSE, utils.transposeMatrix(WVPmatrix));
@@ -247,5 +247,5 @@ function main() {
 }
 
 window.addEventListener("load", e => {
-    init(3);
+    init();
 }, false);

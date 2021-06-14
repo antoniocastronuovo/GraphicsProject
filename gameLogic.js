@@ -4,6 +4,7 @@ function Game(_discNodes) {
     this.rods = [];
     this.discs = [];
     this.rodsDistance = 15.1;
+    this.numberOfDiscs = _discNodes.length;
 
     //Variable to handle the movement
     this.movingSpeed = 0.4;
