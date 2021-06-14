@@ -8,7 +8,7 @@ var assetDir;
 var cx = 4.5;
 var cy = 0.0;
 var cz = 10.0;
-var elevation = 0.0;
+var elevation = -20.0;
 var angle = 0.0;
 
 var lookRadius = 10.0;

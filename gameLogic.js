@@ -38,7 +38,7 @@ function Game(_discNodes) {
 
 }
 
-function Disc(_size, _height, _node,) {
+function Disc(_size, _height, _node) {
     this.size = _size;
     this.height = _height;
     this.node = _node;
@@ -90,57 +90,61 @@ Game.prototype.initMove = function(_fromRod, _toRod) {
 }
 
 Game.prototype.move = function() {
-    var oldWorldMatrix = this.movingDisc.node.worldMatrix;
-    var movementMatrix = utils.identityMatrix();
-    //var shiftDistance = Math.abs(fromRod - toRod) * this.rodsDistance;
+    if(this.discIsMoving) { 
+        var oldWorldMatrix = this.movingDisc.node.worldMatrix;
+        var movementMatrix = utils.identityMatrix();
+        //var shiftDistance = Math.abs(fromRod - toRod) * this.rodsDistance;
 
-    if(this.isMovingUp) {
-        console.log("UP");
-        if(this.currentAltitude < this.maxAltitude) {
-            movementMatrix = utils.MakeTranslateMatrix(0.0, this.movingSpeed, 0.0);
-            this.currentAltitude += this.movingSpeed;
-        }else{ //Up shift is finished, now go either left or right
-            this.isMovingUp = false;
-            (this.fromRod < this.toRod) ? this.isMovingRight = true : this.isMovingLeft = true;
+        if(this.isMovingUp) {
+            console.log("UP");
+            if(this.currentAltitude < this.maxAltitude) {
+                movementMatrix = utils.MakeTranslateMatrix(0.0, this.movingSpeed, 0.0);
+                this.currentAltitude += this.movingSpeed;
+            }else{ //Up shift is finished, now go either left or right
+                this.isMovingUp = false;
+                (this.fromRod < this.toRod) ? this.isMovingRight = true : this.isMovingLeft = true;
+            }
+        }else if(this.isMovingRight) {
+            console.log("RIGHT");
+            if(this.currentShift < this.shiftDistance) {
+                movementMatrix = utils.MakeTranslateMatrix(this.movingSpeed, 0.0, 0.0);
+                this.currentShift += this.movingSpeed;
+            }else{ //Right shift is finished, now go down
+                this.isMovingRight = false;
+                this.isMovingDown = true;
+                this.currentShift = 0.0;
+            }
+        }else if(this.isMovingLeft) {
+            console.log("LEFT");
+            if(this.currentShift < this.shiftDistance) {
+                movementMatrix = utils.MakeTranslateMatrix(- this.movingSpeed, 0.0, 0.0);
+                this.currentShift += this.movingSpeed;
+            }else{ //Left shift is finished, now go down
+                this.isMovingLeft = false;
+                this.isMovingDown = true;
+            }
+        }else if(this.isMovingDown) {
+            console.log("DOWN");
+            if(this.currentAltitude > this.finalAltitude) {
+                movementMatrix = utils.MakeTranslateMatrix(0.0, - this.movingSpeed, 0.0);
+                this.currentAltitude -= this.movingSpeed;
+            }else{ //Movement is finished
+                this.isMovingDown = false;
+                this.currentAltitude = 0.0;
+                this.discIsMoving = false;
+                this.shiftDistance = 0.0;
+                this.fromRod = 0;
+                this.toRod = 0;
+                //Check win
+                this.checkWin();
+            }
+        }else {
+            console.log("NO MOVING");
         }
-    }else if(this.isMovingRight) {
-        console.log("RIGHT");
-        if(this.currentShift < this.shiftDistance) {
-            movementMatrix = utils.MakeTranslateMatrix(this.movingSpeed, 0.0, 0.0);
-            this.currentShift += this.movingSpeed;
-        }else{ //Right shift is finished, now go down
-            this.isMovingRight = false;
-            this.isMovingDown = true;
-            this.currentShift = 0.0;
-        }
-    }else if(this.isMovingLeft) {
-        console.log("LEFT");
-        if(this.currentShift < this.shiftDistance) {
-            movementMatrix = utils.MakeTranslateMatrix(- this.movingSpeed, 0.0, 0.0);
-            this.currentShift += this.movingSpeed;
-        }else{ //Left shift is finished, now go down
-            this.isMovingLeft = false;
-            this.isMovingDown = true;
-        }
-    }else if(this.isMovingDown) {
-        console.log("DOWN");
-        if(this.currentAltitude > this.finalAltitude) {
-            movementMatrix = utils.MakeTranslateMatrix(0.0, - this.movingSpeed, 0.0);
-            this.currentAltitude -= this.movingSpeed;
-        }else{ //Movement is finished
-            this.isMovingDown = false;
-            this.currentAltitude = 0.0;
-            this.discIsMoving = false;
-            this.shiftDistance = 0.0;
-            this.fromRod = 0;
-            this.toRod = 0;
-        }
-    }else {
-        console.log("NO MOVING");
+        
+        var newWorldMatrix = utils.multiplyMatrices(movementMatrix, oldWorldMatrix);
+        this.movingDisc.node.updateWorldMatrix(newWorldMatrix);
     }
-    
-    var newWorldMatrix = utils.multiplyMatrices(movementMatrix, oldWorldMatrix);
-    this.movingDisc.node.updateWorldMatrix(newWorldMatrix);
 }
 
 Game.prototype.scaleMesurements = function(scaling) {
@@ -151,3 +155,55 @@ Game.prototype.scaleMesurements = function(scaling) {
         disc.height *= scaling;
     });
 }
+
+Game.prototype.checkWin = function() {
+    if(this.rods[2].discs.length == this.discs.length){ //Win
+        console.log("VITTORIA");
+    }//else continue the game
+}
+
+/*Game.prototype.getSolution = function () {
+    var solution = [], rods = [];
+    rods[0] = this.rods[0].discs.slice();
+    rods[1] = this.rods[1].discs.slice();
+    rods[2] = this.rods[2].discs.slice();
+    
+    function hanoi(n, destination) {
+        if(n == 1) {
+            var rodIndex = findDiscRodPosition(1); //find smallest disc
+            if(rodIndex != destination) {
+                rods[destination - 1].push(rods[rodIndex - 1].pop());
+                solution.push([rodIndex, destination]);
+            }
+        }else if(n > 1){
+            var rodIndex = findDiscRodPosition(n - 1);
+            if(rodIndex != destination) {
+                var tmpRod; //helper rod
+                for(let i = 1; i<= 3; i++) {
+                    if(rodIndex != i && destination != i) {
+                        tmpRod = i;
+                        break;
+                    }
+                }
+
+                hanoi(n - 1, temporary);
+                rods[destination - 1].push(rods[rodIndex - 1].pop());
+                solution.push([rodIndex, destination]);
+            }
+            //move all n-1 smaller discs to destination rod, too
+            hanoi(n - 1, destination);
+        }
+    }
+
+    function findDiscRodPosition(discSize) {
+        for(let i=0; i<3; i++){}
+            rods[i].forEach(disc => {
+                if(disc.size == discSize)
+                    return i + 1; 
+            });
+        }
+        return -1;
+    }
+
+    return hanoi(this.discs.length, 3);
+}*/
