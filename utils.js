@@ -54,7 +54,7 @@ createProgram:function(gl, vertexShader, fragmentShader) {
 
  resizeCanvasToDisplaySize:function(canvas) {
     const expandFullScreen = () => {
-	  //canvas.height = window.innerHeight;
+	  canvas.height = window.innerHeight;
       canvas.width = window.innerHeight * 4/3;
       
       console.log(canvas.width+" "+window.innerWidth);
