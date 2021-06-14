@@ -10,7 +10,7 @@ var assetDir;
 var cx = 4.5;
 var cy = 0.0;
 var cz = 10.0;
-var elevation = -20.0;
+var elevation = -30.0;
 var angle = 0.0;
 
 var lookRadius = 10.0;
@@ -24,11 +24,9 @@ var nodes = [];
 
 //The game
 var game;
-var initNumberOfDiscs = 4;
-this.maxNumberOfDiscs = 7;
 
 /* Init function: get canvas, compile and link shaders */
-async function init(){
+async function init(numberOfDiscs){
     //Find the location of the directory
     var path = window.location.pathname;
     var page = path.split("/").pop();
@@ -81,7 +79,7 @@ async function init(){
     }
     nodes[0] = baseNode;
     
-    for(let i = 1; i < maxNumberOfDiscs + 1; i++) {
+    for(let i = 1; i < numberOfDiscs + 1; i++) {
         //The next line must be done in init, since it is an async function, load mesh using OBJ loader library
         objStr = await utils.get_objstr(assetDir + "disc" + i + ".obj");
         tmpMesh = new OBJ.Mesh(objStr);
@@ -155,7 +153,9 @@ function main() {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
         gl.generateMipmap(gl.TEXTURE_2D);
     }
-
+	
+    //This line aims only to try the movement
+    //game.initMove(1,2);
 
     drawScene();
 
@@ -182,7 +182,7 @@ function main() {
     }
 
     function drawObjects() {
-        nodes.slice(0, game.numberOfDiscs + 1).forEach(node => {
+        nodes.forEach(node => {
             //Calculate World-View-Projection matrix
             WVPmatrix = utils.multiplyMatrices(projectionMatrix, node.worldMatrix);
             gl.uniformMatrix4fv(matrixLocation, gl.FALSE, utils.transposeMatrix(WVPmatrix));
@@ -212,5 +212,5 @@ function main() {
 }
 
 window.addEventListener("load", e => {
-    init();
+    init(3);
 }, false);
