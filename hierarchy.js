@@ -3,6 +3,7 @@ var Node = function() {
     this.children = [];
     this.localMatrix = utils.identityMatrix();
     this.worldMatrix = utils.identityMatrix();
+    this.initMatrix = utils.identityMatrix();
 };
 
 Node.prototype.setParent = function(parent) {

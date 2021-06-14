@@ -10,6 +10,10 @@
     var playBtn = document.getElementById("play_btn");
     playBtn.addEventListener("click", (e) => {
         var numOfDiscs = parseInt(document.getElementById("drop-down-difficulty").value);
+        //Reset init matrix
+        nodes.forEach(node => {
+            node.worldMatrix = node.initMatrix.slice();
+        });
         game = new Game(nodes.slice(1, numOfDiscs + 1));
         game.scaleMesurements(scaling);
     }, false);

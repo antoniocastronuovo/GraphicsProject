@@ -1,3 +1,5 @@
+"use strict";
+
 var program;
 var gl;
 var shaderDir; 
@@ -24,8 +26,6 @@ var nodes = [];
 var game;
 var initNumberOfDiscs = 4;
 this.maxNumberOfDiscs = 7;
-
-
 
 /* Init function: get canvas, compile and link shaders */
 async function init(){
@@ -74,6 +74,7 @@ async function init(){
 
     var baseNode = new Node();
     baseNode.worldMatrix = utils.MakeScaleMatrix(scaling);
+    baseNode.initMatrix = utils.MakeScaleMatrix(scaling);
     baseNode.drawInfo = {
         materialColor: [1.0, 0.0, 1.0],
         mesh: tmpMesh,
@@ -89,16 +90,16 @@ async function init(){
         var diffColor = (i % 2 === 0) ? [0.3, 0.3, 0.3] : [1.0, 0.0, 0.0];
         nodes[i] = new Node();
         nodes[i].worldMatrix = utils.MakeScaleMatrix(scaling);
+        nodes[i].initMatrix = utils.MakeScaleMatrix(scaling);
         nodes[i].drawInfo = {
             materialColor: diffColor,
             mesh: tmpMesh,
         }
-
         nodes[i].setParent(nodes[0]);
     }
 
     //Create the game
-    var discNodes = this.nodes.slice(1);
+    var discNodes = nodes.slice(1);
     game = new Game(discNodes.slice(0, initNumberOfDiscs));
     game.scaleMesurements(scaling);
 
@@ -143,7 +144,7 @@ function main() {
     gl.bindTexture(gl.TEXTURE_2D, texture);
 
     // Asynchronously load an image
-    imgtx = new Image();
+    var imgtx = new Image();
     imgtx.src = assetDir + "cycles_tower_of_hanoi_BaseColor.png";      
     imgtx.onload = function() {
         gl.bindTexture(gl.TEXTURE_2D, texture);		
