@@ -90,57 +90,60 @@ Game.prototype.initMove = function(_fromRod, _toRod) {
 }
 
 Game.prototype.move = function() {
-    var oldWorldMatrix = this.movingDisc.node.worldMatrix;
-    var movementMatrix = utils.identityMatrix();
-    //var shiftDistance = Math.abs(fromRod - toRod) * this.rodsDistance;
+    if(this.discIsMoving){
+        var oldWorldMatrix = this.movingDisc.node.worldMatrix;
+        var movementMatrix = utils.identityMatrix();
+        //var shiftDistance = Math.abs(fromRod - toRod) * this.rodsDistance;
 
-    if(this.isMovingUp) {
-        console.log("UP");
-        if(this.currentAltitude < this.maxAltitude) {
-            movementMatrix = utils.MakeTranslateMatrix(0.0, this.movingSpeed, 0.0);
-            this.currentAltitude += this.movingSpeed;
-        }else{ //Up shift is finished, now go either left or right
-            this.isMovingUp = false;
-            (this.fromRod < this.toRod) ? this.isMovingRight = true : this.isMovingLeft = true;
+        if(this.isMovingUp) {
+            console.log("UP");
+            if(this.currentAltitude < this.maxAltitude) {
+                movementMatrix = utils.MakeTranslateMatrix(0.0, this.movingSpeed, 0.0);
+                this.currentAltitude += this.movingSpeed;
+            }else{ //Up shift is finished, now go either left or right
+                this.isMovingUp = false;
+                (this.fromRod < this.toRod) ? this.isMovingRight = true : this.isMovingLeft = true;
+            }
+        }else if(this.isMovingRight) {
+            console.log("RIGHT");
+            if(this.currentShift < this.shiftDistance) {
+                movementMatrix = utils.MakeTranslateMatrix(this.movingSpeed, 0.0, 0.0);
+                this.currentShift += this.movingSpeed;
+            }else{ //Right shift is finished, now go down
+                this.isMovingRight = false;
+                this.isMovingDown = true;
+                this.currentShift = 0.0;
+            }
+        }else if(this.isMovingLeft) {
+            console.log("LEFT");
+            if(this.currentShift < this.shiftDistance) {
+                movementMatrix = utils.MakeTranslateMatrix(- this.movingSpeed, 0.0, 0.0);
+                this.currentShift += this.movingSpeed;
+            }else{ //Left shift is finished, now go down
+                this.isMovingLeft = false;
+                this.isMovingDown = true;
+                this.currentShift = 0.0;
+            }
+        }else if(this.isMovingDown) {
+            console.log("DOWN");
+            if(this.currentAltitude > this.finalAltitude) {
+                movementMatrix = utils.MakeTranslateMatrix(0.0, - this.movingSpeed, 0.0);
+                this.currentAltitude -= this.movingSpeed;
+            }else{ //Movement is finished
+                this.isMovingDown = false;
+                this.currentAltitude = 0.0;
+                this.discIsMoving = false;
+                this.shiftDistance = 0.0;
+                this.fromRod = 0;
+                this.toRod = 0;
+            }
+        }else {
+            console.log("NO MOVING");
         }
-    }else if(this.isMovingRight) {
-        console.log("RIGHT");
-        if(this.currentShift < this.shiftDistance) {
-            movementMatrix = utils.MakeTranslateMatrix(this.movingSpeed, 0.0, 0.0);
-            this.currentShift += this.movingSpeed;
-        }else{ //Right shift is finished, now go down
-            this.isMovingRight = false;
-            this.isMovingDown = true;
-            this.currentShift = 0.0;
-        }
-    }else if(this.isMovingLeft) {
-        console.log("LEFT");
-        if(this.currentShift < this.shiftDistance) {
-            movementMatrix = utils.MakeTranslateMatrix(- this.movingSpeed, 0.0, 0.0);
-            this.currentShift += this.movingSpeed;
-        }else{ //Left shift is finished, now go down
-            this.isMovingLeft = false;
-            this.isMovingDown = true;
-        }
-    }else if(this.isMovingDown) {
-        console.log("DOWN");
-        if(this.currentAltitude > this.finalAltitude) {
-            movementMatrix = utils.MakeTranslateMatrix(0.0, - this.movingSpeed, 0.0);
-            this.currentAltitude -= this.movingSpeed;
-        }else{ //Movement is finished
-            this.isMovingDown = false;
-            this.currentAltitude = 0.0;
-            this.discIsMoving = false;
-            this.shiftDistance = 0.0;
-            this.fromRod = 0;
-            this.toRod = 0;
-        }
-    }else {
-        console.log("NO MOVING");
+        
+        var newWorldMatrix = utils.multiplyMatrices(movementMatrix, oldWorldMatrix);
+        this.movingDisc.node.updateWorldMatrix(newWorldMatrix);
     }
-    
-    var newWorldMatrix = utils.multiplyMatrices(movementMatrix, oldWorldMatrix);
-    this.movingDisc.node.updateWorldMatrix(newWorldMatrix);
 }
 
 Game.prototype.scaleMesurements = function(scaling) {

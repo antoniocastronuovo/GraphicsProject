@@ -80,6 +80,8 @@ async function init(){
 	canvas.addEventListener("mousemove", doMouseMove, false);
 	canvas.addEventListener("mousewheel", doMouseWheel, false);
 
+    setEventListners();
+
     //Clear the canvas and enable depth testing
     utils.resizeCanvasToDisplaySize(gl.canvas);
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
@@ -187,7 +189,7 @@ function main() {
     }
 	
     //This line aims only to try the movement
-    game.initMove(1,2);
+    //game.initMove(1,2);
 
     drawScene();
 
