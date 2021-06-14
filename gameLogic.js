@@ -85,7 +85,7 @@ Game.prototype.initMove = function(_fromRod, _toRod) {
             this.rods[this.fromRod - 1].discs.pop();
             this.rods[this.toRod - 1].discs.push(this.movingDisc);
     }else{
-        console.log("FORBIDDEN MOVE");
+        displayAlert(true);
     }
 }
 
