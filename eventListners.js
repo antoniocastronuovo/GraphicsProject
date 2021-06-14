@@ -74,6 +74,7 @@ function hideSameLocation(){
     var moveFrom = document.getElementById("drop-down-from");
     var moveTo = document.getElementById("drop-down-to");
 
+    //set all the unfeasible options of the moveTo to invisible
     for (let  j = 0; j < moveTo.options.length ; j++) {
         if (moveTo.options[j].value === moveFrom.value) {
             moveTo.options[j].style.display = "none";
@@ -81,6 +82,7 @@ function hideSameLocation(){
         }
     }
 
+    //set all the unfeasible options of the moveFrom to invisible
     for (let  j = 0; j < moveFrom.options.length ; j++) {
         if (moveFrom.options[j].value === moveTo.value) {
             moveFrom.options[j].style.display = "none";
@@ -89,9 +91,14 @@ function hideSameLocation(){
     }
 
     moveFrom.addEventListener("change", (e) => {
+
+        //set all the options of the moveTo to visible
         for(let j=0; j < moveFrom.options.length ;j++){
             moveTo.options[j].style.display= "block";
         }
+        
+        
+        //set all the unfeasible options of the moveTo to invisible
         for (let  j = 0; j < moveTo.options.length ; j++) {
             if (moveTo.options[j].value === moveFrom.value) {
                 moveTo.options[j].style.display = "none";
@@ -101,9 +108,13 @@ function hideSameLocation(){
     });
 
     moveTo.addEventListener("change", (e) => {
+                
+        //set all the options of the moveFrom to visible
         for(let j=0; j < moveTo.options.length ;j++){
             moveFrom.options[j].style.display= "block";
         }
+        
+        //set all the unfeasible options of the moveFrom to invisible
         for (let  j = 0; j < moveFrom.options.length ; j++) {
             if (moveFrom.options[j].value === moveTo.value) {
                 moveFrom.options[j].style.display = "none";
