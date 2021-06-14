@@ -14,21 +14,50 @@
         background-color: white;
       }
     </style>
-</head>
 
-
-<body>
-  <canvas id="gameCanvas">
-    Your browser doesn't support the Canvas Element!
-  </canvas>
-  
   <script type="text/javascript" src="utils.js"></script>
   <script type="text/javascript" src="shapesDefinition.js"></script>
   <script type="text/javascript" src="main.js"></script>
   <script type="text/javascript" src="hierarchy.js"></script>
   <script type="text/javascript" src="gameLogic.js"></script>
-
   <script type="text/javascript" src="webgl-obj-loader.min.js"></script>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+</head>
+
+
+<body>
+  <table>
+      <tr>
+        <td>
+          <canvas id="gameCanvas" height="600" style="background-color: rgb(204, 204, 204);"></canvas>
+          </canvas>			
+        </td> 
+        <td width="300" style="background-color: rgb(231, 196, 149); font-family: courier; padding: 5px;">
+          <p><h2 class="text-center"> Move from </h2></p>
+          
+          <select id="drop-down-from" class="form-select" aria-label="Default select example">
+            <option value="1" selected>Position 1</option>
+            <option value="2">Position 2</option>
+            <option value="3">Position 3</option>
+          </select>
+                
+          <p ><h2 class="text-center">to</h2></p>
+          <select id="drop-down-to" class="form-select" aria-label="Default select example" onchange="onDropdownChange(this.value);">
+              <option value="1" selected>Position 1</option>
+              <option value="2">Position 2</option>
+              <option value="3">Position 3</option>
+          </select>
+          <div class="text-center">
+            <button type="button" class="btn btn-secondary btn-lg mt-4">Move</button>
+          </div>
+
+        </td>
+          
+      </tr>
+	</table>
+
 </body>
 
 </html>
