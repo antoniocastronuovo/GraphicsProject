@@ -132,7 +132,6 @@ async function init(){
     //Create the game
     game = new Game(this.nodes.slice(1));
     game.scaleMesurements(scaling);
-    game.isMovingUp = true;
 
     main();
 }
@@ -187,10 +186,13 @@ function main() {
         gl.generateMipmap(gl.TEXTURE_2D);
     }
 	
+    //This line aims only to try the movement
+    game.initMove(1,2);
+
     drawScene();
 
     function drawScene() {
-        game.move(1, 2);
+        game.move();
 
         //Update transformation matrices
         cz = lookRadius * Math.cos(utils.degToRad(-angle)) * Math.cos(utils.degToRad(-elevation));
@@ -213,8 +215,6 @@ function main() {
 
     function drawObjects() {
         nodes.forEach(node => {
-
-
             //Calculate World-View-Projection matrix
             WVPmatrix = utils.multiplyMatrices(projectionMatrix, node.worldMatrix);
             gl.uniformMatrix4fv(matrixLocation, gl.FALSE, utils.transposeMatrix(WVPmatrix));
