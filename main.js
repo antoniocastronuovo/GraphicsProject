@@ -156,6 +156,10 @@ function main() {
     gl.enableVertexAttribArray(positionAttributeLocation);
     var normalAttributeLocation = gl.getAttribLocation(program, "inNormal");  
     gl.enableVertexAttribArray(normalAttributeLocation);
+    var uvAttributeLocation = gl.getAttribLocation(program, "a_uv");  
+    gl.enableVertexAttribArray(uvAttributeLocation);
+    var textLocation = gl.getUniformLocation(program, "u_texture");
+
     
     var matrixLocation = gl.getUniformLocation(program, "matrix");
     var materialDiffColorHandle = gl.getUniformLocation(program, 'mDiffColor');
@@ -163,6 +167,22 @@ function main() {
     var lightColorHandle = gl.getUniformLocation(program, 'lightColor');
     var normalMatrixPositionHandle = gl.getUniformLocation(program, 'nMatrix');
     
+    // Create a texture.
+    var texture = gl.createTexture();
+
+    // Asynchronously load an image
+    imgtx = new Image();
+    imgtx.src = assetDir + "cycles_tower_of_hanoi_BaseColor.png";      
+    imgtx.onload = function() {
+        gl.bindTexture(gl.TEXTURE_2D, texture);		
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, imgtx);	
+
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true); //WebGL has inverted uv coordinates
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.generateMipmap(gl.TEXTURE_2D);
+    }
+	
     drawScene();
 
     function drawScene() {
@@ -180,7 +200,8 @@ function main() {
         gl.uniform3fv(lightDirectionHandle,  directionalLight);
 
         drawObjects();
-        
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, imgtx);	
+
         //This function says: browser, I need to perform an animation so call
         //this function every time you need to refresh a frame
         window.requestAnimationFrame(drawScene);
@@ -202,6 +223,9 @@ function main() {
             
             gl.bindBuffer(gl.ARRAY_BUFFER, node.drawInfo.mesh.normalBuffer);
             gl.vertexAttribPointer(normalAttributeLocation, node.drawInfo.mesh.normalBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, node.drawInfo.mesh.textureBuffer);
+            gl.vertexAttribPointer(uvAttributeLocation, node.drawInfo.mesh.textureBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, node.drawInfo.mesh.indexBuffer);
 
