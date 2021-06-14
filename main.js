@@ -12,30 +12,32 @@ var elevation = 0.0;
 var angle = 0.0;
 
 var lookRadius = 10.0;
+var scaling = 0.3;
 
 //Transformation matrices
-var projectionMatrix, perspectiveMatrix, viewMatrix, worldMatrix;
+var projectionMatrix, perspectiveMatrix, viewMatrix, worldMatrix, WVPmatrix;
 
-var mesh, meshes;
+//The objects collections
+var nodes = [];
+
+//The game
+var game;
 
 //Event handlers to rotate camera on mouse dragging
 var mouseState = false;
 var lastMouseX = -100, lastMouseY = -100;
 function doMouseDown(event) {
-    console.log("mousedown");
 	lastMouseX = event.pageX;
 	lastMouseY = event.pageY;
 	mouseState = true;
 }
 function doMouseUp(event) {
-    console.log("mouseup");
 	lastMouseX = -100;
 	lastMouseY = -100;
 	mouseState = false;
 }
 function doMouseMove(event) {
 	if(mouseState) {
-        console.log("mousemove");
 		var dx = event.pageX - lastMouseX;
 		var dy = lastMouseY - event.pageY;
 		lastMouseX = event.pageX;
@@ -48,7 +50,6 @@ function doMouseMove(event) {
 	}
 }
 function doMouseWheel(event) {
-    console.log("mousewheel");
 	var nLookRadius = lookRadius + event.wheelDelta/1000.0;
 	if((nLookRadius > 2.0) && (nLookRadius < 20.0)) {
 		lookRadius = nLookRadius;
@@ -96,17 +97,42 @@ async function init(){
     });
     gl.useProgram(program);
 
-    meshes = [];
+    
+    /* INIT OBJECTS */ 
     //The next line must be done in init, since it is an async function, load mesh using OBJ loader library
     var objStr = await utils.get_objstr(assetDir + "base.obj");
-    meshes[0] = new OBJ.Mesh(objStr);
-    OBJ.initMeshBuffers(gl, meshes[0]);
+    var tmpMesh = new OBJ.Mesh(objStr);
+    OBJ.initMeshBuffers(gl, tmpMesh);
+
+    var baseNode = new Node();
+    baseNode.worldMatrix = utils.MakeScaleMatrix(scaling);
+    baseNode.drawInfo = {
+        materialColor: [1.0, 0.0, 1.0],
+        mesh: tmpMesh,
+    }
+    nodes[0] = baseNode;
+    
     for(let i=1; i<8; i++) {
         //The next line must be done in init, since it is an async function, load mesh using OBJ loader library
         objStr = await utils.get_objstr(assetDir + "disc" + i + ".obj");
-        meshes[i] = new OBJ.Mesh(objStr);
-        OBJ.initMeshBuffers(gl, meshes[i]);
+        tmpMesh = new OBJ.Mesh(objStr);
+        OBJ.initMeshBuffers(gl, tmpMesh);
+
+        var diffColor = (i % 2 === 0) ? [0.3, 0.3, 0.3] : [1.0, 0.0, 0.0];
+        nodes[i] = new Node();
+        nodes[i].worldMatrix = utils.MakeScaleMatrix(scaling);
+        nodes[i].drawInfo = {
+            materialColor: diffColor,
+            mesh: tmpMesh,
+        }
+
+        nodes[i].setParent(nodes[0]);
     }
+
+    //Create the game
+    game = new Game(this.nodes.slice(1));
+    game.scaleMesurements(scaling);
+    game.isMovingUp = true;
 
     main();
 }
@@ -122,9 +148,6 @@ function main() {
                 ];
     var directionalLightColor = [1.0, 1.0, 1.0];
 
-    //Define material color
-    var cubeMaterialColor = [0.5, 0.5, 0.5];
-
     //Initilize perspective matrix
     perspectiveMatrix = utils.MakePerspective(90, gl.canvas.width/gl.canvas.height, 0.1, 100.0);
 
@@ -139,12 +162,12 @@ function main() {
     var lightDirectionHandle = gl.getUniformLocation(program, 'lightDirection');
     var lightColorHandle = gl.getUniformLocation(program, 'lightColor');
     var normalMatrixPositionHandle = gl.getUniformLocation(program, 'nMatrix');
-
-    worldMatrix = utils.MakeWorld(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3);
     
     drawScene();
 
     function drawScene() {
+        game.move(1, 2);
+
         //Update transformation matrices
         cz = lookRadius * Math.cos(utils.degToRad(-angle)) * Math.cos(utils.degToRad(-elevation));
         cx = lookRadius * Math.sin(utils.degToRad(-angle)) * Math.cos(utils.degToRad(-elevation));
@@ -152,42 +175,44 @@ function main() {
         viewMatrix = utils.MakeView(cx, cy, cz, elevation, -angle);
         projectionMatrix = utils.multiplyMatrices(perspectiveMatrix, viewMatrix);
     
-        //Calculate World-View-Projection matrices
-        var VWPmatrix = utils.multiplyMatrices(projectionMatrix, worldMatrix);
-        gl.uniformMatrix4fv(matrixLocation, gl.FALSE, utils.transposeMatrix(VWPmatrix));
-    
         //Send uniforms to GPU
-        gl.uniformMatrix4fv(normalMatrixPositionHandle, gl.FALSE, utils.transposeMatrix(worldMatrix));
-        gl.uniform3fv(materialDiffColorHandle, cubeMaterialColor);
         gl.uniform3fv(lightColorHandle,  directionalLightColor);
         gl.uniform3fv(lightDirectionHandle,  directionalLight);
 
-        drawMeshes();
+        drawObjects();
         
         //This function says: browser, I need to perform an animation so call
         //this function every time you need to refresh a frame
         window.requestAnimationFrame(drawScene);
     }
 
-    function drawMeshes() {
-        for(let i=0; i<8; i++) {
-            //This must be done for each object mesh
-            gl.bindBuffer(gl.ARRAY_BUFFER, meshes[i].vertexBuffer);
-            gl.vertexAttribPointer(positionAttributeLocation, meshes[i].vertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
-            
-            gl.bindBuffer(gl.ARRAY_BUFFER, meshes[i].normalBuffer);
-            gl.vertexAttribPointer(normalAttributeLocation, meshes[i].normalBuffer.itemSize, gl.FLOAT, false, 0, 0);
+    function drawObjects() {
+        nodes.forEach(node => {
 
-            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, meshes[i].indexBuffer);
+
+            //Calculate World-View-Projection matrix
+            WVPmatrix = utils.multiplyMatrices(projectionMatrix, node.worldMatrix);
+            gl.uniformMatrix4fv(matrixLocation, gl.FALSE, utils.transposeMatrix(WVPmatrix));
+            gl.uniformMatrix4fv(normalMatrixPositionHandle, gl.FALSE, utils.transposeMatrix(node.worldMatrix));
+        
+
+            //This must be done for each object mesh
+            gl.bindBuffer(gl.ARRAY_BUFFER, node.drawInfo.mesh.vertexBuffer);
+            gl.vertexAttribPointer(positionAttributeLocation, node.drawInfo.mesh.vertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
+            
+            gl.bindBuffer(gl.ARRAY_BUFFER, node.drawInfo.mesh.normalBuffer);
+            gl.vertexAttribPointer(normalAttributeLocation, node.drawInfo.mesh.normalBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, node.drawInfo.mesh.indexBuffer);
+
+            //Set object diffuse color
+            gl.uniform3fv(materialDiffColorHandle, node.drawInfo.materialColor);
 
             //Draw elements
-            gl.drawElements(gl.LINE_STRIP, meshes[i].indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
-
-        }
+            gl.drawElements(gl.TRIANGLES, node.drawInfo.mesh.indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+        });
     }
 
 }
-
-
 
 window.onload = init;
