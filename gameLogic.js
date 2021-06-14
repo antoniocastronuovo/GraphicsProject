@@ -85,7 +85,7 @@ Game.prototype.initMove = function(_fromRod, _toRod) {
             this.rods[this.fromRod - 1].discs.pop();
             this.rods[this.toRod - 1].discs.push(this.movingDisc);
     }else{
-        displayAlert(true);
+        displayAlert(true,"danger","Remeber that you can move discs only on bigger ones");
     }
 }
 
@@ -160,7 +160,7 @@ Game.prototype.scaleMesurements = function(scaling) {
 
 Game.prototype.checkWin = function() {
     if(this.rods[2].discs.length == this.discs.length){ //Win
-        console.log("VITTORIA");
+        displayAlert(true,"success","You Won");
     }//else continue the game
 }
 
