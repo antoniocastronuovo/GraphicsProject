@@ -29,12 +29,12 @@ function Game(_discNodes) {
     this.discs[0] = new Disc(7, 2.34198, _discNodes[0]);
     this.discs[1] = new Disc(6, 1.99068, _discNodes[1]);
     this.discs[2] = new Disc(5, 1.69208, _discNodes[2]);
-    this.discs[3] = new Disc(4, 1.43827, _discNodes[3]);
-    this.discs[4] = new Disc(3, 1.22253, _discNodes[4]);
-    this.discs[5] = new Disc(2, 1.22253, _discNodes[5]);
-    this.discs[6] = new Disc(1, 1.03915, _discNodes[6]);
+    if(_discNodes.length > 3) this.discs[3] = new Disc(4, 1.43827, _discNodes[3]);
+    if(_discNodes.length > 4) this.discs[4] = new Disc(3, 1.22253, _discNodes[4]);
+    if(_discNodes.length > 5) this.discs[5] = new Disc(2, 1.22253, _discNodes[5]);
+    if(_discNodes.length > 6) this.discs[6] = new Disc(1, 1.03915, _discNodes[6]);
 
-    this.rods[0].discs = this.discs; //add discs to the first rod
+    this.rods[0].discs = this.discs.slice(); //add discs to the first rod
 
 }
 
@@ -122,6 +122,7 @@ Game.prototype.move = function() {
             }else{ //Left shift is finished, now go down
                 this.isMovingLeft = false;
                 this.isMovingDown = true;
+                this.currentShift = 0.0;
             }
         }else if(this.isMovingDown) {
             console.log("DOWN");
@@ -135,6 +136,7 @@ Game.prototype.move = function() {
                 this.shiftDistance = 0.0;
                 this.fromRod = 0;
                 this.toRod = 0;
+
                 //Check win
                 this.checkWin();
             }
