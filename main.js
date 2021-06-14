@@ -169,6 +169,10 @@ function main() {
     
     // Create a texture.
     var texture = gl.createTexture();
+    // use texture unit 0
+    gl.activeTexture(gl.TEXTURE0);
+    // bind to the TEXTURE_2D bind point of texture unit 0
+    gl.bindTexture(gl.TEXTURE_2D, texture);
 
     // Asynchronously load an image
     imgtx = new Image();
