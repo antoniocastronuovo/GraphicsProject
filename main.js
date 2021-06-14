@@ -57,7 +57,7 @@ function doMouseWheel(event) {
 }
 
 /* Init function: get canvas, compile and link shaders */
-async function init(){
+async function init(numberOfDiscs){
     //Find the location of the directory
     var path = window.location.pathname;
     var page = path.split("/").pop();
@@ -114,7 +114,7 @@ async function init(){
     }
     nodes[0] = baseNode;
     
-    for(let i=1; i<8; i++) {
+    for(let i = 1; i < numberOfDiscs + 1; i++) {
         //The next line must be done in init, since it is an async function, load mesh using OBJ loader library
         objStr = await utils.get_objstr(assetDir + "disc" + i + ".obj");
         tmpMesh = new OBJ.Mesh(objStr);
@@ -132,7 +132,8 @@ async function init(){
     }
 
     //Create the game
-    game = new Game(this.nodes.slice(1));
+    var discNodes = this.nodes.slice(1);
+    game = new Game(discNodes.slice(0, numberOfDiscs));
     game.scaleMesurements(scaling);
 
     main();
@@ -245,4 +246,6 @@ function main() {
 
 }
 
-window.onload = init;
+window.addEventListener("load", e => {
+    init(3);
+}, false);
