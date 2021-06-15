@@ -75,7 +75,7 @@ async function init(){
     baseNode.worldMatrix = utils.MakeScaleMatrix(scaling);
     baseNode.initMatrix = utils.MakeScaleMatrix(scaling);
     baseNode.drawInfo = {
-        materialColor: [1.0, 0.0, 1.0],
+        materialColor: [1.0, 1.0, 1.0],
         mesh: tmpMesh,
     }
     nodes[0] = baseNode;
@@ -86,7 +86,8 @@ async function init(){
         tmpMesh = new OBJ.Mesh(objStr);
         OBJ.initMeshBuffers(gl, tmpMesh);
 
-        var diffColor = (i % 2 === 0) ? [0.3, 0.3, 0.3] : [1.0, 0.0, 0.0];
+        //var diffColor = (i % 2 === 0) ? [0.3, 0.3, 0.3] : [1.0, 0.0, 0.0];
+        var diffColor = [1.0, 1.0, 1.0];
         nodes[i] = new Node();
         nodes[i].worldMatrix = utils.MakeScaleMatrix(scaling);
         nodes[i].initMatrix = utils.MakeScaleMatrix(scaling);
@@ -144,7 +145,10 @@ function main() {
 
     // Asynchronously load an image
     var imgtx = new Image();
-    imgtx.src = assetDir + "cycles_tower_of_hanoi_BaseColor.png";      
+    //imgtx.src = assetDir + "cycles_tower_of_hanoi_BaseColor.png";      
+    imgtx.src = assetDir + "woodTexture.jpg";      
+    //imgtx.src = assetDir + "moonTexture.jpg";  
+    //imgtx.src = assetDir + "blackGoldMarbleTexture.jpg";      
     imgtx.onload = function() {
         gl.bindTexture(gl.TEXTURE_2D, texture);		
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, imgtx);	
@@ -154,6 +158,9 @@ function main() {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
         gl.generateMipmap(gl.TEXTURE_2D);
     }
+
+    //gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, imgtx);	
+
 
     drawScene();
 
@@ -167,12 +174,14 @@ function main() {
         viewMatrix = utils.MakeView(cx, cy, cz, elevation, -angle);
         projectionMatrix = utils.multiplyMatrices(perspectiveMatrix, viewMatrix);
     
-        //Send uniforms to GPU
-        gl.uniform3fv(lightColorHandle,  directionalLightColor);
-        gl.uniform3fv(lightDirectionHandle,  directionalLight);
+        //Send uniforms of lights to GPU
+        gl.uniform3fv(lightColorHandle,  directionalLightColor); //light color
+        gl.uniform3fv(lightDirectionHandle,  directionalLight); //light direction
+
+        //THIS LINE IS CRITICAL
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, imgtx);	
 
         drawObjects();
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, imgtx);	
 
         //This function says: browser, I need to perform an animation so call
         //this function every time you need to refresh a frame

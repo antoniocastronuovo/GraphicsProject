@@ -7,7 +7,7 @@ function Game(_discNodes) {
     this.numberOfDiscs = _discNodes.length;
 
     //Variable to handle the movement
-    this.movingSpeed = 0.4;
+    this.movingSpeed = 0.8;
     this.isMovingUp = false;
     this.isMovingDown = false;
     this.isMovingLeft = false;

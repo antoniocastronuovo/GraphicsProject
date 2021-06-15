@@ -18,7 +18,9 @@ void main() {
   vec3 nNormal = normalize(fsNormal);
   vec3 lambertColor = mDiffColor * lightColor * dot(-lightDirection,nNormal);
   
-  outColor = texture(u_texture, uvFS);
-  //outColor = vec4(clamp(lambertColor, 0.00, 1.0),1.0);
+  vec4 texelColor = texture(u_texture, uvFS); 
+  //outColor = texture(u_texture, uvFS);
+  outColor = vec4(clamp(lambertColor * texelColor.rgb, 0.00, 1.0), texelColor.a);
+  
   //outColor = vec4(1.0, 0.0, 0.0, 1.0);
 }
