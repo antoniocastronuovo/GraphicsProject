@@ -108,8 +108,8 @@ async function init(){
 
 function main() {    
     //Define directional light
-    var dirLightAlpha = -utils.degToRad(60);
-    var dirLightBeta  = -utils.degToRad(120);
+    var dirLightAlpha = -utils.degToRad(45); //60
+    var dirLightBeta  = -utils.degToRad(80); //120
 
     var directionalLight = [Math.cos(dirLightAlpha) * Math.cos(dirLightBeta),
                 Math.sin(dirLightAlpha),
@@ -201,8 +201,9 @@ function loadTexture(textureIndex) {
     // Asynchronously load an image
     var imgtx = new Image();
     //imgtx.src = assetDir + "cycles_tower_of_hanoi_BaseColor.png";      
-    //imgtx.src = assetDir + "woodTexture.jpg";      
-    imgtx.src = assetDir + "texture" + textureIndex + ".jpg";  
+    //imgtx.src = assetDir + "woodTexture.jpg";
+    if(textureIndex == 1) imgtx.src = assetDir + "texture" + textureIndex + ".png";
+    else imgtx.src = assetDir + "texture" + textureIndex + ".jpg";  
     //imgtx.src = assetDir + "blackGoldMarbleTexture.jpg";      
     imgtx.onload = function() {
         gl.bindTexture(gl.TEXTURE_2D, texture);		
@@ -215,6 +216,8 @@ function loadTexture(textureIndex) {
         //Load the image data in the texture object (in the GPU)
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, imgtx);	
     }
+
+    console.log("TEXTURE CHANGED");
 }
 
 window.addEventListener("load", e => {
