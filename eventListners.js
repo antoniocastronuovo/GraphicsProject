@@ -19,6 +19,12 @@
     }, false);
     
     hideSameLocation();
+
+    var textureSelected = document.getElementById("drop-down-texture");
+    textureSelected.addEventListener("change", (e) => {
+         loadTexture(textureSelected.value);
+    });
+
 };
 
 function displayAlert(bool,type,text) {
