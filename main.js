@@ -136,33 +136,7 @@ function main() {
     var lightColorHandle = gl.getUniformLocation(program, 'lightColor');
     var normalMatrixPositionHandle = gl.getUniformLocation(program, 'nMatrix');
     
-    // Create a texture.
-    var texture = gl.createTexture();
-    // use texture unit 0
-    gl.activeTexture(gl.TEXTURE0);
-    // bind to the TEXTURE_2D bind point of texture unit 0
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-
-    // Asynchronously load an image
-    var imgtx = new Image();
-    //imgtx.src = assetDir + "cycles_tower_of_hanoi_BaseColor.png";      
-    imgtx.src = assetDir + "woodTexture.jpg";      
-    //imgtx.src = assetDir + "moonTexture.jpg";  
-    //imgtx.src = assetDir + "blackGoldMarbleTexture.jpg";      
-    imgtx.onload = function() {
-        gl.bindTexture(gl.TEXTURE_2D, texture);		
-        //gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, imgtx);	
-        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true); //WebGL has inverted uv coordinates
-        //Define how textures are interpolated whenever their size needs to be incremented or diminished
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-        gl.generateMipmap(gl.TEXTURE_2D); //smallest copies of the texture
-        //Load the image data in the texture object (in the GPU)
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, imgtx);	
-    }
-
-    
-
+    loadTexture(2);
 
     drawScene();
 
@@ -214,6 +188,33 @@ function main() {
         });
     }
 
+}
+
+function loadTexture(textureIndex) {
+    // Create a texture.
+    var texture = gl.createTexture();
+    // use texture unit 0
+    gl.activeTexture(gl.TEXTURE0);
+    // bind to the TEXTURE_2D bind point of texture unit 0
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+
+    // Asynchronously load an image
+    var imgtx = new Image();
+    //imgtx.src = assetDir + "cycles_tower_of_hanoi_BaseColor.png";      
+    //imgtx.src = assetDir + "woodTexture.jpg";      
+    imgtx.src = assetDir + "texture" + textureIndex + ".jpg";  
+    //imgtx.src = assetDir + "blackGoldMarbleTexture.jpg";      
+    imgtx.onload = function() {
+        gl.bindTexture(gl.TEXTURE_2D, texture);		
+        //gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, imgtx);	
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true); //WebGL has inverted uv coordinates
+        //Define how textures are interpolated whenever their size needs to be incremented or diminished
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.generateMipmap(gl.TEXTURE_2D); //smallest copies of the texture
+        //Load the image data in the texture object (in the GPU)
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, imgtx);	
+    }
 }
 
 window.addEventListener("load", e => {
