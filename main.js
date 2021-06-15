@@ -151,15 +151,17 @@ function main() {
     //imgtx.src = assetDir + "blackGoldMarbleTexture.jpg";      
     imgtx.onload = function() {
         gl.bindTexture(gl.TEXTURE_2D, texture);		
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, imgtx);	
-
+        //gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, imgtx);	
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true); //WebGL has inverted uv coordinates
+        //Define how textures are interpolated whenever their size needs to be incremented or diminished
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-        gl.generateMipmap(gl.TEXTURE_2D);
+        gl.generateMipmap(gl.TEXTURE_2D); //smallest copies of the texture
+        //Load the image data in the texture object (in the GPU)
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, imgtx);	
     }
 
-    //gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, imgtx);	
+    
 
 
     drawScene();
@@ -178,9 +180,6 @@ function main() {
         gl.uniform3fv(lightColorHandle,  directionalLightColor); //light color
         gl.uniform3fv(lightDirectionHandle,  directionalLight); //light direction
 
-        //THIS LINE IS CRITICAL
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, imgtx);	
-
         drawObjects();
 
         //This function says: browser, I need to perform an animation so call
@@ -195,7 +194,6 @@ function main() {
             gl.uniformMatrix4fv(matrixLocation, gl.FALSE, utils.transposeMatrix(WVPmatrix));
             gl.uniformMatrix4fv(normalMatrixPositionHandle, gl.FALSE, utils.transposeMatrix(node.worldMatrix));
         
-
             //This must be done for each object mesh
             gl.bindBuffer(gl.ARRAY_BUFFER, node.drawInfo.mesh.vertexBuffer);
             gl.vertexAttribPointer(positionAttributeLocation, node.drawInfo.mesh.vertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
@@ -203,7 +201,7 @@ function main() {
             gl.bindBuffer(gl.ARRAY_BUFFER, node.drawInfo.mesh.normalBuffer);
             gl.vertexAttribPointer(normalAttributeLocation, node.drawInfo.mesh.normalBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-            gl.bindBuffer(gl.ARRAY_BUFFER, node.drawInfo.mesh.textureBuffer);
+            gl.bindBuffer(gl.ARRAY_BUFFER, node.drawInfo.mesh.textureBuffer); //Send UV coordinates
             gl.vertexAttribPointer(uvAttributeLocation, node.drawInfo.mesh.textureBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, node.drawInfo.mesh.indexBuffer);

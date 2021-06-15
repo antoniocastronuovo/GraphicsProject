@@ -7,12 +7,12 @@ function Game(_discNodes) {
     this.numberOfDiscs = _discNodes.length;
 
     //Variable to handle the movement
-    this.movingSpeed = 0.8;
+    this.movingSpeed = 0.4;
     this.isMovingUp = false;
     this.isMovingDown = false;
     this.isMovingLeft = false;
     this.isMovingRight = false;
-    this.maxAltitude = 20.0;
+    this.maxAltitude = 17.0;
     this.currentAltitude = 0.0;
     this.finalAltitude = 0.0;
     this.currentShift = 0.0;
@@ -93,13 +93,13 @@ Game.prototype.initMove = function(_fromRod, _toRod) {
 Game.prototype.move = function() {
     if(this.discIsMoving) { 
         var oldWorldMatrix = this.movingDisc.node.worldMatrix;
-        var movementMatrix = utils.identityMatrix();
+        var translationMatrix = utils.identityMatrix();
         //var shiftDistance = Math.abs(fromRod - toRod) * this.rodsDistance;
 
         if(this.isMovingUp) {
             console.log("UP");
             if(this.currentAltitude < this.maxAltitude) {
-                movementMatrix = utils.MakeTranslateMatrix(0.0, this.movingSpeed, 0.0);
+                translationMatrix = utils.MakeTranslateMatrix(0.0, this.movingSpeed, 0.0);
                 this.currentAltitude += this.movingSpeed;
             }else{ //Up shift is finished, now go either left or right
                 this.isMovingUp = false;
@@ -108,7 +108,7 @@ Game.prototype.move = function() {
         }else if(this.isMovingRight) {
             console.log("RIGHT");
             if(this.currentShift < this.shiftDistance) {
-                movementMatrix = utils.MakeTranslateMatrix(this.movingSpeed, 0.0, 0.0);
+                translationMatrix = utils.MakeTranslateMatrix(this.movingSpeed, 0.0, 0.0);
                 this.currentShift += this.movingSpeed;
             }else{ //Right shift is finished, now go down
                 this.isMovingRight = false;
@@ -118,7 +118,7 @@ Game.prototype.move = function() {
         }else if(this.isMovingLeft) {
             console.log("LEFT");
             if(this.currentShift < this.shiftDistance) {
-                movementMatrix = utils.MakeTranslateMatrix(- this.movingSpeed, 0.0, 0.0);
+                translationMatrix = utils.MakeTranslateMatrix(- this.movingSpeed, 0.0, 0.0);
                 this.currentShift += this.movingSpeed;
             }else{ //Left shift is finished, now go down
                 this.isMovingLeft = false;
@@ -128,7 +128,7 @@ Game.prototype.move = function() {
         }else if(this.isMovingDown) {
             console.log("DOWN");
             if(this.currentAltitude > this.finalAltitude) {
-                movementMatrix = utils.MakeTranslateMatrix(0.0, - this.movingSpeed, 0.0);
+                translationMatrix = utils.MakeTranslateMatrix(0.0, - this.movingSpeed, 0.0);
                 this.currentAltitude -= this.movingSpeed;
             }else{ //Movement is finished
                 this.isMovingDown = false;
@@ -144,8 +144,8 @@ Game.prototype.move = function() {
         }else {
             console.log("NO MOVING");
         }
-        
-        var newWorldMatrix = utils.multiplyMatrices(movementMatrix, oldWorldMatrix);
+
+        var newWorldMatrix = utils.multiplyMatrices(translationMatrix, oldWorldMatrix);
         this.movingDisc.node.updateWorldMatrix(newWorldMatrix);
     }
 }
