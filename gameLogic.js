@@ -97,12 +97,14 @@ Game.prototype.move = function() {
         var oldWorldMatrix = this.movingDisc.node.worldMatrix;
         var translationMatrix = utils.identityMatrix();
         var deltaShift;
+        var dx = 0.0, dy = 0.0, dz = 0.0;
 
         if(this.isMovingUp) {
             console.log("UP");
             if(this.currentAltitude < this.maxAltitude) {
                 deltaShift = (this.currentAltitude + this.movingSpeed <= this.maxAltitude) ? this.movingSpeed : (this.maxAltitude - this.currentAltitude);
                 translationMatrix = utils.MakeTranslateMatrix(0.0, deltaShift, 0.0);
+                dy = deltaShift;
                 this.currentAltitude += deltaShift;
             }else{ //Up shift is finished, now go either left or right
                 this.isMovingUp = false;
@@ -113,6 +115,7 @@ Game.prototype.move = function() {
             if(this.currentShift < this.shiftDistance) {
                 deltaShift = (this.currentShift + this.movingSpeed <= this.shiftDistance) ? this.movingSpeed : (this.shiftDistance - this.currentShift);
                 translationMatrix = utils.MakeTranslateMatrix(deltaShift, 0.0, 0.0);
+                dx = deltaShift;
                 this.currentShift += deltaShift;
             }else{ //Right shift is finished, now go down
                 this.isMovingRight = false;
@@ -124,6 +127,7 @@ Game.prototype.move = function() {
             if(this.currentShift < this.shiftDistance) {
                 deltaShift = (this.currentShift + this.movingSpeed <= this.shiftDistance) ? this.movingSpeed : (this.shiftDistance - this.currentShift);
                 translationMatrix = utils.MakeTranslateMatrix(- deltaShift, 0.0, 0.0);
+                dx = -deltaShift;
                 this.currentShift += deltaShift;
             }else{ //Left shift is finished, now go down
                 this.isMovingLeft = false;
@@ -135,6 +139,7 @@ Game.prototype.move = function() {
             if(this.currentAltitude > this.finalAltitude) {
                 deltaShift = (this.currentAltitude - this.movingSpeed >= this.finalAltitude) ? this.movingSpeed : (this.currentAltitude - this.finalAltitude);
                 translationMatrix = utils.MakeTranslateMatrix(0.0, - deltaShift, 0.0);
+                dy = -deltaShift;
                 this.currentAltitude -= deltaShift;
             }else{ //Movement is finished
                 this.isMovingDown = false;
@@ -153,6 +158,7 @@ Game.prototype.move = function() {
 
         var newWorldMatrix = utils.multiplyMatrices(translationMatrix, oldWorldMatrix);
         this.movingDisc.node.updateWorldMatrix(newWorldMatrix);
+        this.movingDisc.center = [this.movingDisc.center[0] + dx, this.movingDisc.center[1] + dy, this.movingDisc.center[2] + dz];
     }
 }
 
