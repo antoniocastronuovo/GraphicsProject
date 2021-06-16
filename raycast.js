@@ -51,15 +51,22 @@ function myOnMouseUp(ev){
     
     //We iterate on all the objects in the scene to check for collisions
     //for(i = 0; i < objectsInScene.length; i++){
+    var nearestDisc = [-1, Infinity]; //disc index and distance
     for(let i = 0; i < game.discs.length; i++){
         //var hit = raySphereIntersection(rayStartPoint, normalisedRayDir, objectsInScene[i][0], objectsInScene[i][1]);
-        var hit = hitTest(rayStartPoint, normalisedRayDir, game.discs[i].center, game.discs[i].width / 2);
-        if(hit){
-            console.log("hit disc number "+i) + 1;
-            //console.log("hit sphere number "+i);
-            game.discs[i].node.drawInfo.materialColor = [Math.random(), Math.random(), Math.random()];
+        //var hit = hitTest(rayStartPoint, normalisedRayDir, game.discs[i].center, game.discs[i].width / 2);
+        var hit = boxHitTest(rayStartPoint, normalisedRayDir, game.discs[i].center, game.discs[i].width, game.discs[i].height);
+        if(hit[0] && hit[1] < nearestDisc[1]){
+            nearestDisc = [i, hit[1]];
         }
     }
+
+    if(nearestDisc[0] != -1){
+        game.discs[nearestDisc[0]].node.drawInfo.materialColor = [Math.random(), Math.random(), Math.random()];
+        console.log("Nearest disc hit "+nearestDisc[0] + 1);    
+    }
+    
+            
 }
 
 function normaliseVector(vec){
@@ -100,6 +107,38 @@ function hitTest(rayStartPoint, rayNormalisedDir, sphereCentre, sphereRadius){
     console.log("hit");
     return true;
     
+}
+
+function boxHitTest(rayStartPoint, rayNormalisedDir, discCenter, discWidth, discHeight) {
+    var tmin = -Infinity;
+    var tmax = Infinity;
+    
+    var a = [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]];
+    var h = [discWidth / 2, discHeight / 2, discWidth / 2];
+
+    var eps = 0.000000001;
+    var p = [discCenter[0] - rayStartPoint[0], discCenter[1] - rayStartPoint[1], discCenter[2] - rayStartPoint[2]];
+    for(let i=0; i<3; i++) {
+        let e = a[i][0] * p[0] + a[i][1] * p[1] + a[i][2] * p[2];
+        let f =  a[i][0] * rayNormalisedDir[0] + a[i][1] * rayNormalisedDir[1] + a[i][2] * rayNormalisedDir[2];
+
+        if(Math.abs(f) > eps) {
+            let t1 = (e + h[i]) / f;
+            let t2 = (e - h[i]) / f;
+            if(t1 > t2) {
+                let tmp = t1;
+                t1 = t2;
+                t2 = tmp;
+            }
+            if(t1 > tmin) tmin = t1;
+            if(t2 < tmax) tmax = t2;
+            if(tmin > tmax) return [false, 0];
+            if(tmax < 0) return [false, 0];
+        }else if((- e - h[i] > 0) || (- e + h[i] < 0)) return [false, 0];
+    }
+    if(tmin > 0) 
+        return [true, tmin];
+    return [true, tmax];
 }
 
 window.addEventListener("mouseup", myOnMouseUp);

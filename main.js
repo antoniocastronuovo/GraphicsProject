@@ -10,7 +10,7 @@ var assetDir;
 var cx = 4.5;
 var cy = 0.0;
 var cz = 10.0;
-var elevation = -30.0;
+var elevation = -20.0; //0.0 to see perpendicular
 var angle = 0.0;
 
 var lookRadius = 10.0;
@@ -217,8 +217,6 @@ function loadTexture(textureIndex) {
         //Load the image data in the texture object (in the GPU)
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, imgtx);	
     }
-
-    console.log("TEXTURE CHANGED");
 }
 
 window.addEventListener("load", e => {
