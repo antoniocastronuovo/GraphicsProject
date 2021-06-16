@@ -108,15 +108,36 @@ function setMouseListeners(){
         console.log("mouse up");
         lastMouseX = -100;
         lastMouseY = -100;
-        mouseState = false;
-        //IF WRONG RELEASE POSITION
-        clickedDisc.node.updateWorldMatrix(preMovementWorldMatrix);
-        clickedDisc.center = preMovementCenter;
         
-        //Reset
-        clickedDisc = null;
-        preMovementCenter = null;
-        preMovementWorldMatrix = null;
+        if(clickedDisc!=null) {
+            var selectedRod = getSelectedRod(clickedDisc.center);
+            if(selectedRod != null){
+                var finalPoisition = utils.multiplyMatrices(utils.MakeTranslateMatrix(selectedRod.center[0] - preMovementCenter[0],selectedRod.getDiscStackHeight() + clickedDisc.height - preMovementCenter[1], 0.0),preMovementWorldMatrix);
+                clickedDisc.node.updateWorldMatrix(finalPoisition);
+                clickedDisc.center = [selectedRod.center[0],selectedRod.getDiscStackHeight() + clickedDisc.height, 0.0];
+                
+            }else{
+                //IF WRONG RELEASE POSITION
+                clickedDisc.node.updateWorldMatrix(preMovementWorldMatrix);
+                clickedDisc.center = preMovementCenter;
+            }
+            //Reset
+            clickedDisc = null;
+            preMovementCenter = null;
+            preMovementWorldMatrix = null;
+            mouseState = false;
+        }
+    }
+
+    function getSelectedRod(center){
+        for(let i=0; i<3;i++){ 
+            if(center[0] < game.rods[i].center[0] + game.rods[i].width && center[0] >  game.rods[i].center[0] - game.rods[i].width 
+                && center[1] < game.rods[i].center[1] + game.rods[i].height && center[1] >  game.rods[i].center[1] - game.rods[i].height 
+                && center[2] < game.rods[i].center[2] + game.rods[i].width && center[2] >  game.rods[i].center[2] - game.rods[i].width)
+
+                return game.rods[i];
+        }
+        return null;
     }
 
     function doMouseMove(event) {

@@ -23,9 +23,9 @@ function Game(_discNodes) {
     this.toRod = 0;
 
     //Init rods and discs
-    this.rods[0] = new Rod(1, 0);
-    this.rods[1] = new Rod(2, this.rodsDistance);
-    this.rods[2] = new Rod(3, this.rodsDistance * 2);
+    this.rods[0] = new Rod(1, 0 , [-15.151,7.8,0.0]);
+    this.rods[1] = new Rod(2, this.rodsDistance,[0.0,7.8,0.0]);
+    this.rods[2] = new Rod(3, this.rodsDistance * 2,[15.151,7.8,0.0]);
 
     this.discs[0] = new Disc(7, 2.34198, 14.076, [-15.151, 3.0816, 0.0], _discNodes[0]);
     this.discs[1] = new Disc(6, 1.99068, 11.9646, [-15.151, 5.248, 0.0], _discNodes[1]);
@@ -48,9 +48,12 @@ function Disc(_size, _height, _width, _center, _node) {
     
 }
 
-function Rod(_number, _position) {
+function Rod(_number, _position,_center) {
     this.number = _number;
     this.position = _position;
+    this.center = _center;
+    this.width = 5;
+    this.height = 17;
     this.discs = [];
 }
 
@@ -166,6 +169,13 @@ Game.prototype.scaleMesurements = function(scaling) {
     this.movingSpeed *= scaling;
     this.maxAltitude *= scaling;
     this.rodsDistance *= scaling;
+    this.rods.forEach(rod => {
+        rod.center[0] *= scaling;
+        rod.center[1] *= scaling;
+        rod.center[2] *= scaling;
+        rod.width *= scaling;
+        rod.height *= scaling;
+    })
     this.discs.forEach(disc => {
         disc.height *= scaling;
         disc.width *= scaling;
