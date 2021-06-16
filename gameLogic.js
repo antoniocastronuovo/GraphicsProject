@@ -27,21 +27,23 @@ function Game(_discNodes) {
     this.rods[1] = new Rod(2, this.rodsDistance);
     this.rods[2] = new Rod(3, this.rodsDistance * 2);
 
-    this.discs[0] = new Disc(7, 2.34198, _discNodes[0]);
-    this.discs[1] = new Disc(6, 1.99068, _discNodes[1]);
-    this.discs[2] = new Disc(5, 1.69208, _discNodes[2]);
-    if(_discNodes.length > 3) this.discs[3] = new Disc(4, 1.43827, _discNodes[3]);
-    if(_discNodes.length > 4) this.discs[4] = new Disc(3, 1.22253, _discNodes[4]);
-    if(_discNodes.length > 5) this.discs[5] = new Disc(2, 1.22253, _discNodes[5]);
-    if(_discNodes.length > 6) this.discs[6] = new Disc(1, 1.03915, _discNodes[6]);
+    this.discs[0] = new Disc(7, 2.34198, 14.076, [-15.151, 3.0816, 0.0], _discNodes[0]);
+    this.discs[1] = new Disc(6, 1.99068, 11.9646, [-15.151, 5.248, 0.0], _discNodes[1]);
+    this.discs[2] = new Disc(5, 1.69208, 10.1699, [-15.151, 7.0938, 0.0], _discNodes[2]);
+    if(_discNodes.length > 3) this.discs[3] = new Disc(4, 1.43827, 8.64442, [-15.151, 8.6616, 0.0], _discNodes[3]);
+    if(_discNodes.length > 4) this.discs[4] = new Disc(3, 1.22253, 7.34776, [-15.151, 9.994, 0.0], _discNodes[4]);
+    if(_discNodes.length > 5) this.discs[5] = new Disc(2, 1.22253, 6.2456, [-15.151, 11.226, 0.0], _discNodes[5]);
+    if(_discNodes.length > 6) this.discs[6] = new Disc(1, 1.03915, 5.30876, [-15.151, 12.367, 0.0], _discNodes[6]);
 
     this.rods[0].discs = this.discs.slice(); //add discs to the first rod
 
 }
 
-function Disc(_size, _height, _node) {
+function Disc(_size, _height, _width, _center, _node) {
     this.size = _size;
     this.height = _height;
+    this.width = _width;
+    this.center = _center;
     this.node = _node;
     
 }
@@ -160,6 +162,9 @@ Game.prototype.scaleMesurements = function(scaling) {
     this.rodsDistance *= scaling;
     this.discs.forEach(disc => {
         disc.height *= scaling;
+        disc.center[0] *= scaling;
+        disc.center[1] *= scaling;
+        disc.center[2] *= scaling;
     });
 }
 

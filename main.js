@@ -98,6 +98,7 @@ async function init(){
         nodes[i].setParent(nodes[0]);
     }
 
+    
     //Create the game
     var discNodes = nodes.slice(1);
     game = new Game(discNodes.slice(0, initNumberOfDiscs));
