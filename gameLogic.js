@@ -162,6 +162,7 @@ Game.prototype.scaleMesurements = function(scaling) {
     this.rodsDistance *= scaling;
     this.discs.forEach(disc => {
         disc.height *= scaling;
+        disc.width *= scaling;
         disc.center[0] *= scaling;
         disc.center[1] *= scaling;
         disc.center[2] *= scaling;
