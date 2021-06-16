@@ -44,7 +44,7 @@ async function init(){
         return;
     }
 
-    setMouseListeners()
+    setMouseListeners();
     setEventListners();
 
     //Clear the canvas and enable depth testing
