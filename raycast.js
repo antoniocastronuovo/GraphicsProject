@@ -1,6 +1,6 @@
 "use strict";
 
-function myOnMouseUp(ev){
+function myOnMouseDown(ev){
     //These commented lines of code only work if the canvas is full screen
     /*console.log("ClientX "+ev.clientX+" ClientY "+ev.clientY);
     var normX = (2*ev.clientX)/ gl.canvas.width - 1;
@@ -65,6 +65,8 @@ function myOnMouseUp(ev){
         game.discs[nearestDisc[0]].node.drawInfo.materialColor = [Math.random(), Math.random(), Math.random()];
         console.log("Nearest disc hit "+nearestDisc[0] + 1);    
     }
+
+    return game.discs[nearestDisc[0]];
     
             
 }
@@ -141,4 +143,4 @@ function boxHitTest(rayStartPoint, rayNormalisedDir, discCenter, discWidth, disc
     return [true, tmax];
 }
 
-window.addEventListener("mouseup", myOnMouseUp);
+//window.addEventListener("mouseup", myOnMouseDown);

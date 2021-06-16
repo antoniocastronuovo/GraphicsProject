@@ -38,21 +38,24 @@ function displayAlert(bool,type,text) {
     alert.style.display = "none";
 }
 
-function setMouseListeners(){
+function setCameraListeners(){
     //Event handlers to rotate camera on mouse dragging
     var mouseState = false;
     var lastMouseX = -100, lastMouseY = -100;
     function doMouseDown(event) {
+        console.log("mouse down");
         lastMouseX = event.pageX;
         lastMouseY = event.pageY;
         mouseState = true;
     }
     function doMouseUp(event) {
+        console.log("mouse up");
         lastMouseX = -100;
         lastMouseY = -100;
         mouseState = false;
     }
     function doMouseMove(event) {
+        console.log("mouse move");
         if(mouseState) {
             var dx = event.pageX - lastMouseX;
             var dy = lastMouseY - event.pageY;
@@ -66,6 +69,7 @@ function setMouseListeners(){
         }
     }
     function doMouseWheel(event) {
+        console.log("mouse wheel");
         var nLookRadius = lookRadius + event.wheelDelta/1000.0;
         if((nLookRadius > 2.0) && (nLookRadius < 20.0)) {
             lookRadius = nLookRadius;
@@ -78,6 +82,76 @@ function setMouseListeners(){
 	canvas.addEventListener("mouseup", doMouseUp, false);
 	canvas.addEventListener("mousemove", doMouseMove, false);
 	canvas.addEventListener("mousewheel", doMouseWheel, false);
+}
+
+
+function setMouseListeners(){
+    //Event handlers to rotate camera on mouse dragging
+    var mouseState = false;
+    var lastMouseX = -100, lastMouseY = -100;
+    var clickedDisc = null;
+    var preMovementWorldMatrix = null;
+    var preMovementCenter = null;
+    function doMouseDown(event) {
+        console.log("mouse down");
+        clickedDisc = myOnMouseDown(event);
+        lastMouseX = event.pageX;
+        lastMouseY = event.pageY;
+        if(clickedDisc != null) {
+            mouseState = true;
+            preMovementWorldMatrix = clickedDisc.node.worldMatrix;
+            preMovementCenter = clickedDisc.center;
+        }
+    }
+
+    function doMouseUp(event) {
+        console.log("mouse up");
+        lastMouseX = -100;
+        lastMouseY = -100;
+        mouseState = false;
+        //IF WRONG RELEASE POSITION
+        clickedDisc.node.updateWorldMatrix(preMovementWorldMatrix);
+        clickedDisc.center = preMovementCenter;
+        
+        //Reset
+        clickedDisc = null;
+        preMovementCenter = null;
+        preMovementWorldMatrix = null;
+    }
+
+    function doMouseMove(event) {
+        console.log("mouse move");
+        if(mouseState) {
+            var dx = event.pageX - lastMouseX;
+            var dy = lastMouseY - event.pageY;
+            lastMouseX = event.pageX;
+            lastMouseY = event.pageY;
+            
+            var delta = 0.02;
+            if((dx != 0) || (dy != 0)) {
+                var oldWorldMatrix = clickedDisc.node.worldMatrix;
+                var translationMatrix = utils.MakeTranslateMatrix(dx * delta, dy * delta, 0.0);
+                var newWorldMatrix = utils.multiplyMatrices(translationMatrix, oldWorldMatrix);
+                clickedDisc.node.updateWorldMatrix(newWorldMatrix);
+                clickedDisc.center = [clickedDisc.center[0] + dx * delta, clickedDisc.center[1] + dy * delta, clickedDisc.center[2] + 0.0];
+            }
+        }
+    }
+
+    function doMouseWheel(event) {
+        console.log("mouse wheel");
+        var nLookRadius = lookRadius + event.wheelDelta/1000.0;
+        if((nLookRadius > 2.0) && (nLookRadius < 20.0)) {
+            lookRadius = nLookRadius;
+        }
+    }
+
+    var canvas = document.getElementById("gameCanvas");
+    //Set mouse event handlers
+    window.addEventListener("mousedown", doMouseDown, false);
+	window.addEventListener("mouseup", doMouseUp, false);
+	window.addEventListener("mousemove", doMouseMove, false);
+	//window.addEventListener("mousewheel", doMouseWheel, false);
 }
 
 function hideSameLocation(){
