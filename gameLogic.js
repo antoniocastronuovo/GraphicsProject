@@ -67,20 +67,21 @@ Rod.prototype.getDiscStackHeight = function() {
 
 //Check if move is allowed and set movingDisc
 Game.prototype.isMoveAllowed = function(fromRod, toRod) {
-    //Get last disc in the fromRod and the last disc (if exists) in the toRod
-    var lastDiscFrom = null;
-    if(this.rods[fromRod - 1].discs.length > 0)
-        lastDiscFrom = this.rods[fromRod - 1].discs[this.rods[fromRod - 1].discs.length - 1];
-    var lastDiscTo = null;
-    if(this.rods[toRod - 1].discs.length > 0)
-        lastDiscTo = this.rods[toRod - 1].discs[this.rods[toRod - 1].discs.length - 1];
+    if(fromRod != null && toRod != null && fromRod > 0 && fromRod < 4 && toRod > 0 && toRod < 4) {
+        //Get last disc in the fromRod and the last disc (if exists) in the toRod
+        var lastDiscFrom = null;
+        if(this.rods[fromRod - 1].discs.length > 0)
+            lastDiscFrom = this.rods[fromRod - 1].discs[this.rods[fromRod - 1].discs.length - 1];
+        var lastDiscTo = null;
+        if(this.rods[toRod - 1].discs.length > 0)
+            lastDiscTo = this.rods[toRod - 1].discs[this.rods[toRod - 1].discs.length - 1];
 
-    if((lastDiscFrom !== null && lastDiscTo == null) || 
-        (lastDiscFrom !== null && lastDiscTo != null && lastDiscFrom.size < lastDiscTo.size)){
-        this.movingDisc = lastDiscFrom;
-        return true;
+        if((lastDiscFrom !== null && lastDiscTo == null) || 
+            (lastDiscFrom !== null && lastDiscTo != null && lastDiscFrom.size < lastDiscTo.size)){
+            this.movingDisc = lastDiscFrom;
+            return true;
+        }
     }
-        
     return false;
 }
 
