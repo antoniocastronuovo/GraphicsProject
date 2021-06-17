@@ -29,13 +29,17 @@
 
 function displayAlert(bool,type,text) {
     var alert = document.getElementById("alert");
-    if(bool){
-        alert.style.display = "block";
+    //var rectangle = document.getElementById("legend");
+    if(bool){      
         alert.className = "alert alert-"+ type +" fade show mt-4";
         alert.textContent = text;
+        alert.style.display = "block";
+        //rectangle.style.display = "block";
     }
-    else
-    alert.style.display = "none";
+    else{
+        alert.style.display = "none";
+        //rectangle.style.display = "none";
+    }
 }
 
 function setCameraListeners(){
@@ -121,17 +125,27 @@ function setMouseListeners(){
         
         if(clickedDisc!=null) {
             var selectedRod = getSelectedRod(clickedDisc.center);
-            
-            if(selectedRod != null  && game.isMoveAllowed(game.rods.indexOf(fromRod)+1,game.rods.indexOf(selectedRod)+1)){
+            var isTopDisc = (fromRod.discs.indexOf(clickedDisc) === fromRod.discs.length - 1);
+            var prova = game.isMoveAllowed(game.rods.indexOf(fromRod)+1,game.rods.indexOf(selectedRod)+1);
+            if(selectedRod != null  && game.isMoveAllowed(game.rods.indexOf(fromRod)+1,game.rods.indexOf(selectedRod)+1) && 
+            isTopDisc){
                 var finalPoisition = utils.multiplyMatrices(utils.MakeTranslateMatrix(selectedRod.center[0] - preMovementCenter[0],selectedRod.getDiscStackHeight() + baseHeight - preMovementCenter[1], 0.0),preMovementWorldMatrix);
                 clickedDisc.node.updateWorldMatrix(finalPoisition);
                 clickedDisc.center = [selectedRod.center[0],selectedRod.getDiscStackHeight() + baseHeight, 0.0];
                 game.initMove(game.rods.indexOf(fromRod)+1,game.rods.indexOf(selectedRod)+1,false);
+                game.checkWin();
             }else{
                 //IF WRONG RELEASE POSITION
                 clickedDisc.node.updateWorldMatrix(preMovementWorldMatrix);
                 clickedDisc.center = preMovementCenter;
-                displayAlert(true,"danger","Remeber that you can move discs only on bigger ones");
+                if(selectedRod != fromRod){
+                    if(!isTopDisc){
+                        displayAlert(true,"danger","Remeber that you can move only the top disc of each rod");
+                    }else{
+                        displayAlert(true,"danger","Remeber that you can move discs only on bigger ones");
+                    }
+                }
+                
             }
             //Reset
             clickedDisc = null;
