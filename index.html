@@ -25,7 +25,12 @@
       <tr>
         <td>
           <canvas id="gameCanvas" height="600" style="background-color: rgb(204, 204, 204);"></canvas>
-          </canvas>			
+          </canvas>
+          
+            <div id="alert" class="alert alert-danger fade show mt-4" style="display:none; position: absolute; z-index: 1; left: 40px; top: 400px; width:300px;" role="alert">
+              <strong>Move not possible!</strong> Remeber that you can move discs only on bigger ones
+            </div>
+		
         </td> 
         <td width="300" style="background-color: rgb(231, 196, 149); font-family: courier; padding: 5px;">
           <h2><b>Tower of Hanoi</b></h2>
@@ -60,9 +65,7 @@
           <div class="text-center">
             <button id = "confirm_Move" type="button" class="btn btn-secondary btn-lg mt-4">Move</button>
           </div>
-          <div id="alert" class="alert alert-danger fade show mt-4" style="display:none" role="alert">
-            <strong>Move not possible!</strong> Remeber that you can move discs only on bigger ones
-          </div>
+         
 
           
           <p><b class="text-center">Change texture:</b></p>
