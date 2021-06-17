@@ -139,16 +139,22 @@ function setMouseListeners(){
         console.log("mouse up");
         lastMouseX = -100
         lastMouseY = -100;
+        var offset = 0;
         
+
         if(clickedDisc!=null) {
             var selectedRod = getSelectedRod(clickedDisc.center);
             var isTopDisc = (fromRod.discs.indexOf(clickedDisc) === fromRod.discs.length - 1);
-            var prova = game.isMoveAllowed(game.rods.indexOf(fromRod)+1,game.rods.indexOf(selectedRod)+1);
+            
             if(selectedRod != null  && game.isMoveAllowed(game.rods.indexOf(fromRod)+1,game.rods.indexOf(selectedRod)+1) && 
             isTopDisc){
-                var finalPoisition = utils.multiplyMatrices(utils.MakeTranslateMatrix(selectedRod.center[0] - preMovementCenter[0],selectedRod.getDiscStackHeight() + baseHeight - preMovementCenter[1], 0.0),preMovementWorldMatrix);
+                offset = baseHeight;
+                if(selectedRod.discs.length!=0){
+                    offset = 0;
+                }
+                var finalPoisition = utils.multiplyMatrices(utils.MakeTranslateMatrix(selectedRod.center[0] - preMovementCenter[0],selectedRod.getDiscStackHeight() + offset - preMovementCenter[1], 0.0),preMovementWorldMatrix);
                 clickedDisc.node.updateWorldMatrix(finalPoisition);
-                clickedDisc.center = [selectedRod.center[0],selectedRod.getDiscStackHeight() + baseHeight, 0.0];
+                clickedDisc.center = [selectedRod.center[0],selectedRod.getDiscStackHeight() + offset, 0.0];
                 game.initMove(game.rods.indexOf(fromRod)+1,game.rods.indexOf(selectedRod)+1,false);
                 game.checkWin();
             }else{
