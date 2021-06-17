@@ -19,7 +19,7 @@
     }, false);
     
     hideSameLocation();
-    //setCameraListeners();
+    setCameraListeners();
 
     var textureSelected = document.getElementById("drop-down-texture");
     textureSelected.addEventListener("change", (e) => {
@@ -43,50 +43,12 @@ function displayAlert(display,type,text) {
         alert.style.display = "none";
 }
 
-
-function changeAngle(newAngle) {    
-    angle = newAngle;
-}    
-
-function changeElevation(newElevation) {
-    elevation = newElevation;
-}
-
-
 function setCameraListeners(){
-    //Event handlers to rotate camera on mouse dragging
-    var mouseState = false;
-    var lastMouseX = -100, lastMouseY = -100;
-    function doMouseDown(event) {
-        console.log("mouse down");
-        lastMouseX = event.pageX;
-        lastMouseY = event.pageY;
-        mouseState = true;
-    }
-    function doMouseUp(event) {
-        console.log("mouse up");
-        lastMouseX = -100;
-        lastMouseY = -100;
-        mouseState = false;
-    }
-
+    var angleSlider = document.getElementById("angleSlider");
+    var elevationSlider = document.getElementById("elevationSlider");
+    var canvas = document.getElementById("gameCanvas");
     
-
-    function doMouseMove(event) {
-        console.log("mouse move");
-        if(mouseState) {
-            var dx = event.pageX - lastMouseX;
-            var dy = lastMouseY - event.pageY;
-            lastMouseX = event.pageX;
-            lastMouseY = event.pageY;
-            
-            if((dx != 0) || (dy != 0)) {
-                angle = angle + 0.5 * dx;
-                elevation = elevation + 0.5 * dy;
-            }
-        }
-    }
-    function doMouseWheel(event) {
+    function changeLookRadius(event) {
         console.log("mouse wheel");
         var nLookRadius = lookRadius + event.wheelDelta/1000.0;
         if((nLookRadius > 2.0) && (nLookRadius < 20.0)) {
@@ -94,15 +56,17 @@ function setCameraListeners(){
         }
     }
 
-    var canvas = document.getElementById("gameCanvas");
-    var angleRange = document.getElementById("angleRange");
-    //angleRange.addEventListener("change", changeAngle(angleRange.value));
-    //Set mouse event handlers
-    //canvas.addEventListener("mousedown", doMouseDown, false);
-	//canvas.addEventListener("mouseup", doMouseUp, false);
-	//canvas.addEventListener("mousemove", doMouseMove, false);
-	canvas.addEventListener("mousewheel", doMouseWheel, false);
+    function changeAngle(event) {    
+        angle = angleSlider.value;
+    }    
+    
+    function changeElevation(event) {
+        elevation = elevationSlider.value;
+    }
 
+    angleSlider.addEventListener("input", changeAngle);
+    elevationSlider.addEventListener("input", changeElevation);
+    canvas.addEventListener("mousewheel", changeLookRadius, false);
 }
 
 
