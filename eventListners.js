@@ -46,6 +46,8 @@ function displayAlert(display,type,text) {
 function setCameraListeners(){
     var angleSlider = document.getElementById("angleSlider");
     var elevationSlider = document.getElementById("elevationSlider");
+    var divElevationSlider = document.getElementById("slider1");
+    var divAngleSlider = document.getElementById("slider2");
     var canvas = document.getElementById("gameCanvas");
     
     function changeLookRadius(event) {
@@ -58,10 +60,12 @@ function setCameraListeners(){
 
     function changeAngle(event) {    
         angle = angleSlider.value;
+        divAngleSlider.innerText = " Angle:" + angleSlider.value +"°";
     }    
     
     function changeElevation(event) {
         elevation = elevationSlider.value;
+        divElevationSlider.innerText = " Elev:" + elevationSlider.value +"°";
     }
 
     angleSlider.addEventListener("input", changeAngle);
@@ -72,7 +76,7 @@ function setCameraListeners(){
 
 function setMouseListeners(){
     //Event handlers to rotate camera on mouse dragging
-    var baseHeight = 0.9;
+    var baseHeight = 0.8;
     var fromRod = null;
     var mouseState = false;
     var lastMouseX = -100, lastMouseY = -100;
@@ -114,9 +118,9 @@ function setMouseListeners(){
             
 
             if(selectedRod != null  && game.isMoveAllowed(game.rods.indexOf(fromRod)+1,game.rods.indexOf(selectedRod)+1)){
-                offset = baseHeight;
-                if(selectedRod.discs.indexOf(game.discs[0])!=-1){
-                    offset = 0.8;
+                offset = 0.7;
+                if(selectedRod.discs.indexOf(game.discs[0])==0){ //if on the pile there is the largest disc
+                    offset = game.discs[0].height;
                 }
                 var finalPoisition = utils.multiplyMatrices(utils.MakeTranslateMatrix(selectedRod.center[0] - preMovementCenter[0],selectedRod.getDiscStackHeight() + offset - preMovementCenter[1], 0.0),preMovementWorldMatrix);
                 clickedDisc.node.updateWorldMatrix(finalPoisition);

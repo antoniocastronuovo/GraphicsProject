@@ -32,23 +32,24 @@
             </div>
 		
         </td> 
-        <td width="300" style="background-color: rgb(231, 196, 149); font-family: courier; padding: 5px;">
-          <h2><b>Tower of Hanoi</b></h2>
+        <td id="sideBar" width="300" class="form-group" style="background-color: rgb(231, 196, 149); font-family: courier; padding: 5px;">
+          <h3 class="text-center mt-2"><b>Tower of Hanoi</b></h3>
 
-          <p><b class="text-center">Change difficulty:</b></p>
-          <select id="drop-down-difficulty" class="form-select" aria-label="Default select example">
-            <option value="3">3 discs</option>
-            <option value="4" selected>4 discs</option>
-            <option value="5">5 discs</option>
-            <option value="6">6 discs</option>
-            <option value="7">7 discs</option>
-          </select>
-          
-          <div class="text-center">
-            <button id="play_btn" type="button" class="btn btn-secondary btn-lg mt-4">Reset</button>
+          <p class="text-center mt-2"><b>Change difficulty:</b></p>
+          <div class="input-group gap-2">
+            <select id="drop-down-difficulty" class="form-select" aria-label="Default select example">
+              <option value="3">3 discs</option>
+              <option value="4" selected>4 discs</option>
+              <option value="5">5 discs</option>
+              <option value="6">6 discs</option>
+              <option value="7">7 discs</option>
+            </select>
+            
+            <button id="play_btn" type="button"  class="btn btn-secondary btn-lg">Reset</button>
+            
           </div>
 
-          <p><b class="text-center"> Move from </b></p>
+          <p class="text-center mt-2"><b class="text-center"> Move from </b></p>
           
           <select id="drop-down-from" class="form-select" aria-label="Default select example">
             <option value="1" selected>Position 1</option>
@@ -56,7 +57,7 @@
             <option value="3">Position 3</option>
           </select>
                 
-          <p ><b class="text-center">to</b></p>
+          <p class="text-center mt-2"><b>to</b></p>
           <select id="drop-down-to" class="form-select" aria-label="Default select example">
               <option value="1">Position 1</option>
               <option value="2" selected>Position 2</option>
@@ -68,19 +69,19 @@
          
 
           
-          <p><b class="text-center">Change texture:</b></p>
+          <p class="text-center mt-2"><b>Change texture:</b></p>
           <select id="drop-down-texture" class="form-select" aria-label="Default select example">
             <option value="1">Colors</option>
             <option value="2" selected>Wood</option>
             <option value="3">Moon</option>
             <option value="4">Marble</option>
           </select>
-          <p><b> Camera options </b></p>
-          <div id="slider1">Elevation: -90°
-            <input id="elevationSlider" type="range" min="-90" max="90" step="0.1" value="-20"/> 90° <br/>	
+          <p class="text-center mt-2"><b> Camera options </b></p>
+          <div >
+            <input id="elevationSlider" type="range" min="-90" max="90" step="1" value="-20"/> <span id="slider1">Elev:-20° </span>  <br/>	
           </div>
-          <div id="slider1">Angle: -90°      
-            <input id="angleSlider" type="range" min="-90" max="90" step="0.1" value="0"/> 90° <br/>	
+          <div >      
+            <input id="angleSlider" type="range" min="-90" max="90" step="1" value="0"/> <span id="slider2">Angle:0° </span><br/>	
           </div>
         </td> 
       </tr>
