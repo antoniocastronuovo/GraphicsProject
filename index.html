@@ -2,18 +2,8 @@
 <html lang="en-US">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style type="text/css">
-      body {
-        margin: 0;
-        background-color: gray;
-      }
-      canvas {
-        display: block;
-        background-color: white;
-      }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <script type="text/javascript" src="utils.js"></script>
   <script type="text/javascript" src="main.js"></script>
@@ -22,6 +12,8 @@
   <script type="text/javascript" src="eventListners.js"></script>
   <script type="text/javascript" src="webgl-obj-loader.min.js"></script>
   <script type="text/javascript" src="raycast.js"></script>
+
+  <link rel="stylesheet" href="css/style.css">
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
@@ -36,8 +28,9 @@
           </canvas>			
         </td> 
         <td width="300" style="background-color: rgb(231, 196, 149); font-family: courier; padding: 5px;">
-          <p><h2 class="text-center">Change difficulty:</h2></p>
-          
+          <h2><b>Tower of Hanoi</b></h2>
+
+          <p><b class="text-center">Change difficulty:</b></p>
           <select id="drop-down-difficulty" class="form-select" aria-label="Default select example">
             <option value="3">3 discs</option>
             <option value="4" selected>4 discs</option>
@@ -50,7 +43,7 @@
             <button id="play_btn" type="button" class="btn btn-secondary btn-lg mt-4">Reset</button>
           </div>
 
-          <p><h2 class="text-center"> Move from </h2></p>
+          <p><b class="text-center"> Move from </b></p>
           
           <select id="drop-down-from" class="form-select" aria-label="Default select example">
             <option value="1" selected>Position 1</option>
@@ -58,7 +51,7 @@
             <option value="3">Position 3</option>
           </select>
                 
-          <p ><h2 class="text-center">to</h2></p>
+          <p ><b class="text-center">to</b></p>
           <select id="drop-down-to" class="form-select" aria-label="Default select example">
               <option value="1">Position 1</option>
               <option value="2" selected>Position 2</option>
@@ -72,13 +65,20 @@
           </div>
 
           
-          <p><h2 class="text-center">Change texture:</h2></p>
+          <p><b class="text-center">Change texture:</b></p>
           <select id="drop-down-texture" class="form-select" aria-label="Default select example">
             <option value="1">Colors</option>
             <option value="2" selected>Wood</option>
             <option value="3">Moon</option>
             <option value="4">Marble</option>
           </select>
+          <p><b> Camera options </b></p>
+          <div id="slider1">Elevation: -90°
+            <input id="elevationRange" type="range" min="-90" max="90" step="0.1" value="-20" oninput="changeElevation(this.value);"/> 90° <br/>	
+          </div>
+          <div id="slider1">Angle: -90°      
+            <input id="angleRange" type="range" min="-90" max="90" step="0.1" value="0" oninput="changeAngle(this.value);"/> 90° <br/>	
+          </div>
         </td> 
       </tr>
 	</table>
