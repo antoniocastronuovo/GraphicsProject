@@ -87,6 +87,8 @@ function setCameraListeners(){
 
 function setMouseListeners(){
     //Event handlers to rotate camera on mouse dragging
+    var baseHeight = 0.9;
+    var fromRod = null;
     var mouseState = false;
     var lastMouseX = -100, lastMouseY = -100;
     var clickedDisc = null;
@@ -101,6 +103,13 @@ function setMouseListeners(){
             mouseState = true;
             preMovementWorldMatrix = clickedDisc.node.worldMatrix;
             preMovementCenter = clickedDisc.center;
+            game.rods.forEach(rod => {
+              rod.forEach(disc => {
+                    if(clickedDisc === disc){
+                        fromRod = rod;
+                    }
+                });
+            });
         }
     }
 
@@ -112,10 +121,10 @@ function setMouseListeners(){
         if(clickedDisc!=null) {
             var selectedRod = getSelectedRod(clickedDisc.center);
             if(selectedRod != null){
-                var finalPoisition = utils.multiplyMatrices(utils.MakeTranslateMatrix(selectedRod.center[0] - preMovementCenter[0],selectedRod.getDiscStackHeight() + clickedDisc.height - preMovementCenter[1], 0.0),preMovementWorldMatrix);
+                var finalPoisition = utils.multiplyMatrices(utils.MakeTranslateMatrix(selectedRod.center[0] - preMovementCenter[0],selectedRod.getDiscStackHeight() + baseHeight - preMovementCenter[1], 0.0),preMovementWorldMatrix);
                 clickedDisc.node.updateWorldMatrix(finalPoisition);
-                clickedDisc.center = [selectedRod.center[0],selectedRod.getDiscStackHeight() + clickedDisc.height, 0.0];
-                
+                clickedDisc.center = [selectedRod.center[0],selectedRod.getDiscStackHeight() + baseHeight, 0.0];
+                game.initMove(game.rods.indexOf(fromRod)+1,game.rods.indexOf(selectedRod)+1,false);
             }else{
                 //IF WRONG RELEASE POSITION
                 clickedDisc.node.updateWorldMatrix(preMovementWorldMatrix);

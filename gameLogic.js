@@ -65,10 +65,11 @@ Rod.prototype.getDiscStackHeight = function() {
     return sum;
 }
 
-Game.prototype.initMove = function(_fromRod, _toRod) {
+Game.prototype.initMove = function(_fromRod, _toRod, _startMovement = true) {
     //Set game variables
     this.fromRod = _fromRod;
     this.toRod = _toRod;
+    this.startMovement = _startMovement;
 
     var lastDiscFrom = null;
     if(this.rods[this.fromRod - 1].discs.length > 0)
@@ -84,9 +85,11 @@ Game.prototype.initMove = function(_fromRod, _toRod) {
             this.currentAltitude = this.rods[this.fromRod - 1].getDiscStackHeight();
             this.finalAltitude = this.rods[this.toRod - 1].getDiscStackHeight() + lastDiscFrom.height;
             this.movingDisc = lastDiscFrom;
-            this.discIsMoving = true;
-            this.isMovingUp = true;
-            this.shiftDistance = Math.abs(this.fromRod - this.toRod) * this.rodsDistance;
+            if(this.startMovement){
+                this.discIsMoving = true;
+                this.isMovingUp = true;
+                this.shiftDistance = Math.abs(this.fromRod - this.toRod) * this.rodsDistance;
+            }
             //Update discs positions
             this.rods[this.fromRod - 1].discs.pop();
             this.rods[this.toRod - 1].discs.push(this.movingDisc);
