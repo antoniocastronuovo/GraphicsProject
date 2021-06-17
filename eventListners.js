@@ -19,6 +19,7 @@
     }, false);
     
     hideSameLocation();
+    //setCameraListeners();
 
     var textureSelected = document.getElementById("drop-down-texture");
     textureSelected.addEventListener("change", (e) => {
@@ -27,20 +28,30 @@
 
 };
 
-function displayAlert(bool,type,text) {
+function displayAlert(display,type,text) {
     var alert = document.getElementById("alert");
-    //var rectangle = document.getElementById("legend");
-    if(bool){      
+    if(display){
+        alert.style.display = "block";
         alert.className = "alert alert-"+ type +" fade show mt-4";
         alert.textContent = text;
-        alert.style.display = "block";
-        //rectangle.style.display = "block";
+        //Close after a delta time
+        setTimeout(() => {
+            alert.style.display = "none";
+        }, 2500);
     }
-    else{
+    else
         alert.style.display = "none";
-        //rectangle.style.display = "none";
-    }
 }
+
+
+function changeAngle(newAngle) {    
+    angle = newAngle;
+}    
+
+function changeElevation(newElevation) {
+    elevation = newElevation;
+}
+
 
 function setCameraListeners(){
     //Event handlers to rotate camera on mouse dragging
@@ -58,6 +69,9 @@ function setCameraListeners(){
         lastMouseY = -100;
         mouseState = false;
     }
+
+    
+
     function doMouseMove(event) {
         console.log("mouse move");
         if(mouseState) {
@@ -81,11 +95,14 @@ function setCameraListeners(){
     }
 
     var canvas = document.getElementById("gameCanvas");
+    var angleRange = document.getElementById("angleRange");
+    //angleRange.addEventListener("change", changeAngle(angleRange.value));
     //Set mouse event handlers
-    canvas.addEventListener("mousedown", doMouseDown, false);
-	canvas.addEventListener("mouseup", doMouseUp, false);
-	canvas.addEventListener("mousemove", doMouseMove, false);
+    //canvas.addEventListener("mousedown", doMouseDown, false);
+	//canvas.addEventListener("mouseup", doMouseUp, false);
+	//canvas.addEventListener("mousemove", doMouseMove, false);
 	canvas.addEventListener("mousewheel", doMouseWheel, false);
+
 }
 
 
