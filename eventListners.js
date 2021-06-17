@@ -79,12 +79,14 @@ function setMouseListeners(){
     var clickedDisc = null;
     var preMovementWorldMatrix = null;
     var preMovementCenter = null;
+    var isTopDisc;
     
     function doMouseDown(event) {
         console.log("mouse down");
         clickedDisc = myOnMouseDown(event);
         lastMouseX = event.pageX;
         lastMouseY = event.pageY;
+        
         if(clickedDisc != null) {
             mouseState = true;
             preMovementWorldMatrix = clickedDisc.node.worldMatrix;
@@ -93,6 +95,7 @@ function setMouseListeners(){
               rod.discs.forEach(disc => {
                     if(clickedDisc === disc){
                         fromRod = rod;
+                        isTopDisc = (fromRod.discs.indexOf(clickedDisc) === fromRod.discs.length - 1);
                     }
                 });
             });
@@ -108,13 +111,12 @@ function setMouseListeners(){
 
         if(clickedDisc!=null) {
             var selectedRod = getSelectedRod(clickedDisc.center);
-            var isTopDisc = (fromRod.discs.indexOf(clickedDisc) === fromRod.discs.length - 1);
             
-            if(selectedRod != null  && game.isMoveAllowed(game.rods.indexOf(fromRod)+1,game.rods.indexOf(selectedRod)+1) && 
-            isTopDisc){
+
+            if(selectedRod != null  && game.isMoveAllowed(game.rods.indexOf(fromRod)+1,game.rods.indexOf(selectedRod)+1)){
                 offset = baseHeight;
-                if(selectedRod.discs.length!=0){
-                    offset = 0;
+                if(selectedRod.discs.indexOf(game.discs[0])!=-1){
+                    offset = 0.8;
                 }
                 var finalPoisition = utils.multiplyMatrices(utils.MakeTranslateMatrix(selectedRod.center[0] - preMovementCenter[0],selectedRod.getDiscStackHeight() + offset - preMovementCenter[1], 0.0),preMovementWorldMatrix);
                 clickedDisc.node.updateWorldMatrix(finalPoisition);
@@ -162,7 +164,8 @@ function setMouseListeners(){
             lastMouseY = event.pageY;
             
             var delta = 0.02;
-            if((dx != 0) || (dy != 0)) {
+
+            if(isTopDisc && ((dx != 0) || (dy != 0)) ) {
                 var oldWorldMatrix = clickedDisc.node.worldMatrix;
                 var translationMatrix = utils.MakeTranslateMatrix(dx * delta, dy * delta, 0.0);
                 var newWorldMatrix = utils.multiplyMatrices(translationMatrix, oldWorldMatrix);
