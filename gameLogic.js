@@ -90,10 +90,10 @@ Game.prototype.initMove = function(_fromRod, _toRod, _startMovement = true) {
     this.toRod = _toRod;
     this.startMovement = _startMovement;
 
-    if(isMoveAllowed(this.fromRod, this.toRod)) {
+    if(this.isMoveAllowed(this.fromRod, this.toRod)) {
             //Set movement variables
             this.currentAltitude = this.rods[this.fromRod - 1].getDiscStackHeight();
-            this.finalAltitude = this.rods[this.toRod - 1].getDiscStackHeight() + lastDiscFrom.height;
+            this.finalAltitude = this.rods[this.toRod - 1].getDiscStackHeight() + this.movingDisc.height;
             if(this.startMovement){
                 this.discIsMoving = true;
                 this.isMovingUp = true;

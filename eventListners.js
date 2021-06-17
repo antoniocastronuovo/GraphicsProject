@@ -121,7 +121,8 @@ function setMouseListeners(){
         
         if(clickedDisc!=null) {
             var selectedRod = getSelectedRod(clickedDisc.center);
-            if(selectedRod != null ){
+            
+            if(selectedRod != null  && game.isMoveAllowed(game.rods.indexOf(fromRod)+1,game.rods.indexOf(selectedRod)+1)){
                 var finalPoisition = utils.multiplyMatrices(utils.MakeTranslateMatrix(selectedRod.center[0] - preMovementCenter[0],selectedRod.getDiscStackHeight() + baseHeight - preMovementCenter[1], 0.0),preMovementWorldMatrix);
                 clickedDisc.node.updateWorldMatrix(finalPoisition);
                 clickedDisc.center = [selectedRod.center[0],selectedRod.getDiscStackHeight() + baseHeight, 0.0];
@@ -130,6 +131,7 @@ function setMouseListeners(){
                 //IF WRONG RELEASE POSITION
                 clickedDisc.node.updateWorldMatrix(preMovementWorldMatrix);
                 clickedDisc.center = preMovementCenter;
+                displayAlert(true,"danger","Remeber that you can move discs only on bigger ones");
             }
             //Reset
             clickedDisc = null;
