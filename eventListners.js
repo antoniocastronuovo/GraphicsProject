@@ -94,6 +94,7 @@ function setMouseListeners(){
     var clickedDisc = null;
     var preMovementWorldMatrix = null;
     var preMovementCenter = null;
+    
     function doMouseDown(event) {
         console.log("mouse down");
         clickedDisc = myOnMouseDown(event);

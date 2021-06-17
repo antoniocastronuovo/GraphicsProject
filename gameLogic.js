@@ -65,26 +65,35 @@ Rod.prototype.getDiscStackHeight = function() {
     return sum;
 }
 
+//Check if move is allowed and set movingDisc
+Game.prototype.isMoveAllowed = function(fromRod, toRod) {
+    //Get last disc in the fromRod and the last disc (if exists) in the toRod
+    var lastDiscFrom = null;
+    if(this.rods[fromRod - 1].discs.length > 0)
+        lastDiscFrom = this.rods[fromRod - 1].discs[this.rods[fromRod - 1].discs.length - 1];
+    var lastDiscTo = null;
+    if(this.rods[toRod - 1].discs.length > 0)
+        lastDiscTo = this.rods[toRod - 1].discs[this.rods[toRod - 1].discs.length - 1];
+
+    if((lastDiscFrom !== null && lastDiscTo == null) || 
+        (lastDiscFrom !== null && lastDiscTo != null && lastDiscFrom.size < lastDiscTo.size)){
+        this.movingDisc = lastDiscFrom;
+        return true;
+    }
+        
+    return false;
+}
+
 Game.prototype.initMove = function(_fromRod, _toRod, _startMovement = true) {
     //Set game variables
     this.fromRod = _fromRod;
     this.toRod = _toRod;
     this.startMovement = _startMovement;
 
-    var lastDiscFrom = null;
-    if(this.rods[this.fromRod - 1].discs.length > 0)
-        lastDiscFrom = this.rods[this.fromRod - 1].discs[this.rods[this.fromRod - 1].discs.length - 1];
-    var lastDiscTo = null;
-    if(this.rods[this.toRod - 1].discs.length > 0)
-        lastDiscTo = this.rods[this.toRod - 1].discs[this.rods[this.toRod - 1].discs.length - 1];
-    
-    //Check wheater move is ok
-    if((lastDiscFrom !== null && lastDiscTo == null) || 
-        (lastDiscFrom !== null && lastDiscTo != null && lastDiscFrom.size < lastDiscTo.size)) {
+    if(isMoveAllowed(this.fromRod, this.toRod)) {
             //Set movement variables
             this.currentAltitude = this.rods[this.fromRod - 1].getDiscStackHeight();
             this.finalAltitude = this.rods[this.toRod - 1].getDiscStackHeight() + lastDiscFrom.height;
-            this.movingDisc = lastDiscFrom;
             if(this.startMovement){
                 this.discIsMoving = true;
                 this.isMovingUp = true;
