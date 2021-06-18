@@ -13,14 +13,19 @@ var cz = 10.0;
 var elevation = -20.0; //0.0 to see perpendicular
 var angle = 0.0;
 
-var lookRadius = 10.0;
+var lookRadius = 15.0;
 var scaling = 0.3;
+var deltaFactor = 375;
 
 //Transformation matrices
 var projectionMatrix, perspectiveMatrix, viewMatrix, worldMatrix, WVPmatrix;
 
 //The objects collections
 var nodes = [];
+
+//textures
+var tableTexture;
+var generalTexture;
 
 //The game
 var game;
@@ -67,6 +72,19 @@ async function init(){
     
     /* INIT OBJECTS */ 
     //The next line must be done in init, since it is an async function, load mesh using OBJ loader library
+    var objStr = await utils.get_objstr(assetDir + "uploads_files_821916_Table.obj");
+    var tmpMesh = new OBJ.Mesh(objStr);
+    OBJ.initMeshBuffers(gl, tmpMesh);
+
+    var tableNode = new Node();
+    tableNode.worldMatrix = utils.multiplyMatrices(utils.MakeTranslateMatrix(0.0, -12.3274, 0.0), utils.MakeScaleMatrix(0.15));
+    tableNode.initMatrix = utils.multiplyMatrices(utils.MakeTranslateMatrix(0.0, -12.3274, 0.0), utils.MakeScaleMatrix(0.15));
+    tableNode.drawInfo = {
+        materialColor: [0.8, 0.8, 0.8],
+        mesh: tmpMesh,
+    }
+    nodes[0] = tableNode;
+
     var objStr = await utils.get_objstr(assetDir + "base.obj");
     var tmpMesh = new OBJ.Mesh(objStr);
     OBJ.initMeshBuffers(gl, tmpMesh);
@@ -78,15 +96,14 @@ async function init(){
         materialColor: [1.0, 1.0, 1.0],
         mesh: tmpMesh,
     }
-    nodes[0] = baseNode;
+    nodes[1] = baseNode;
     
-    for(let i = 1; i < maxNumberOfDiscs + 1; i++) {
+    for(let i = 2; i < maxNumberOfDiscs + 2; i++) {
         //The next line must be done in init, since it is an async function, load mesh using OBJ loader library
-        objStr = await utils.get_objstr(assetDir + "disc" + i + ".obj");
+        objStr = await utils.get_objstr(assetDir + "disc" + (i - 1) + ".obj");
         tmpMesh = new OBJ.Mesh(objStr);
         OBJ.initMeshBuffers(gl, tmpMesh);
 
-        //var diffColor = (i % 2 === 0) ? [0.3, 0.3, 0.3] : [1.0, 0.0, 0.0];
         var diffColor = [1.0, 1.0, 1.0];
         nodes[i] = new Node();
         nodes[i].worldMatrix = utils.MakeScaleMatrix(scaling);
@@ -95,12 +112,12 @@ async function init(){
             materialColor: diffColor,
             mesh: tmpMesh,
         }
-        nodes[i].setParent(nodes[0]);
+        nodes[i].setParent(nodes[1]);
     }
 
     
     //Create the game
-    var discNodes = nodes.slice(1);
+    var discNodes = nodes.slice(2);
     game = new Game(discNodes.slice(0, initNumberOfDiscs));
     game.scaleMesurements(scaling);
 
@@ -137,6 +154,7 @@ function main() {
     var lightColorHandle = gl.getUniformLocation(program, 'lightColor');
     var normalMatrixPositionHandle = gl.getUniformLocation(program, 'nMatrix');
     
+
     loadTexture(2);
 
     drawScene();
@@ -163,7 +181,16 @@ function main() {
     }
 
     function drawObjects() {
-        nodes.slice(0, game.numberOfDiscs + 1).forEach(node => {
+        var i = 0;
+        nodes.slice(0, game.numberOfDiscs + 2).forEach(node => {
+            if(i === 0) {
+                gl.activeTexture(gl.TEXTURE0 + 1);
+                gl.bindTexture(gl.TEXTURE_2D, tableTexture);
+            }else{
+                gl.activeTexture(gl.TEXTURE0);
+                gl.bindTexture(gl.TEXTURE_2D, generalTexture);
+            }
+            i++;
             //Calculate World-View-Projection matrix
             WVPmatrix = utils.multiplyMatrices(projectionMatrix, node.worldMatrix);
             gl.uniformMatrix4fv(matrixLocation, gl.FALSE, utils.transposeMatrix(WVPmatrix));
@@ -193,21 +220,19 @@ function main() {
 
 function loadTexture(textureIndex) {
     // Create a texture.
-    var texture = gl.createTexture();
+    generalTexture = gl.createTexture();
     // use texture unit 0
     gl.activeTexture(gl.TEXTURE0);
     // bind to the TEXTURE_2D bind point of texture unit 0
-    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.bindTexture(gl.TEXTURE_2D, generalTexture);
 
     // Asynchronously load an image
     var imgtx = new Image();
-    //imgtx.src = assetDir + "cycles_tower_of_hanoi_BaseColor.png";      
-    //imgtx.src = assetDir + "woodTexture.jpg";
     if(textureIndex == 1) imgtx.src = assetDir + "texture" + textureIndex + ".png";
     else imgtx.src = assetDir + "texture" + textureIndex + ".jpg";  
-    //imgtx.src = assetDir + "blackGoldMarbleTexture.jpg";      
+
     imgtx.onload = function() {
-        gl.bindTexture(gl.TEXTURE_2D, texture);		
+        gl.bindTexture(gl.TEXTURE_2D, generalTexture);		
         //gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, imgtx);	
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true); //WebGL has inverted uv coordinates
         //Define how textures are interpolated whenever their size needs to be incremented or diminished
@@ -218,8 +243,10 @@ function loadTexture(textureIndex) {
         //gl.generateMipmap(gl.TEXTURE_2D); //smallest copies of the texture
         //Load the image data in the texture object (in the GPU)
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, imgtx);	
-    }
+    }     
 }
+
+
 
 window.addEventListener("load", e => {
     init();

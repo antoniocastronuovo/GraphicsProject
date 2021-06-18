@@ -14,12 +14,15 @@
         nodes.forEach(node => {
             node.worldMatrix = node.initMatrix.slice();
         });
-        game = new Game(nodes.slice(1, numOfDiscs + 1));
+        game = new Game(nodes.slice(2, numOfDiscs + 2));
         game.scaleMesurements(scaling);
     }, false);
     
-    hideSameLocation();
+    //hideSameLocation();
     setCameraListeners();
+
+    var moveFrom = document.getElementById("drop-down-from");
+    moveFrom.addEventListener("change", onFromChange, false);
 
     var textureSelected = document.getElementById("drop-down-texture");
     textureSelected.addEventListener("change", (e) => {
@@ -167,7 +170,7 @@ function setMouseListeners(){
             lastMouseX = event.pageX;
             lastMouseY = event.pageY;
             
-            var delta = 0.02;
+            var delta = lookRadius / deltaFactor;
 
             if(isTopDisc && ((dx != 0) || (dy != 0)) ) {
                 var oldWorldMatrix = clickedDisc.node.worldMatrix;
@@ -179,20 +182,10 @@ function setMouseListeners(){
         }
     }
 
-    function doMouseWheel(event) {
-        console.log("mouse wheel");
-        var nLookRadius = lookRadius + event.wheelDelta/1000.0;
-        if((nLookRadius > 2.0) && (nLookRadius < 20.0)) {
-            lookRadius = nLookRadius;
-        }
-    }
-
-    var canvas = document.getElementById("gameCanvas");
     //Set mouse event handlers
     window.addEventListener("mousedown", doMouseDown, false);
 	window.addEventListener("mouseup", doMouseUp, false);
 	window.addEventListener("mousemove", doMouseMove, false);
-	//window.addEventListener("mousewheel", doMouseWheel, false);
 }
 
 function hideSameLocation(){
@@ -247,5 +240,25 @@ function hideSameLocation(){
             }
         }
     });
+
+}
+
+function onFromChange() {
+    var moveFrom = document.getElementById("drop-down-from");
+    var moveTo = document.getElementById("drop-down-to");
+
+    var selectedValue = moveFrom.value;
+    
+    for (let  j = 0, firstVisibile = true; j < moveFrom.options.length ; j++) {
+        if(moveTo.options[j].value === selectedValue) {
+            moveTo.options[j].style.display = "none";
+        }else{
+            moveTo.options[j].style.display = "block";
+            if(firstVisibile) {
+                firstVisibile = false;
+                moveTo.selectedIndex = j;
+            };
+        }
+    }
 
 }
