@@ -40,9 +40,9 @@ void main() {
 	vec4 LBcontr = clamp(dot(lightDirectionSpot2, nNormal),0.0,1.0) * lightColorSpot2;
 	vec4 LCcontr = clamp(dot(lightDirectionSpot3, nNormal),0.0,1.0) * lightColorSpot3;
 */
-  vec3 lambertColor = mDiffColor * lightColor * dot(lightDirection,nNormal);
+  vec3 lambertColor = mDiffColor * lightColor * dot(-lightDirection,nNormal);
   
-  //vec4 texelColor = texture(u_texture, uvFS); 
-  outColor = vec4(clamp(lambertColor * texelColor.rgb + (spotLight1), 0.00, 1.0), texture(u_texture, uvFS).a);
+  vec4 texelColor = texture(u_texture, uvFS); 
+  outColor = vec4(clamp(lambertColor*texelColor.rgb + (spotLight1), 0.00, 1.0), texelColor.a);
   
 }

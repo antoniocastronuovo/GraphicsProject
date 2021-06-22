@@ -6,7 +6,7 @@ var shaderDir;
 var baseDir;
 var assetDir;
 
-var spotLightDirection = [0.0,-1.0,0.0];
+var spotLightDirection = [0.0,1.0,0.0];
 var spotLightColor = [1.0,0.0,0.0];
 var positionSpot = [0.0,14.0,0.0];
 var targetSpot = 14.0;
@@ -141,7 +141,7 @@ function main() {
                 Math.sin(dirLightAlpha),
                 Math.cos(dirLightAlpha) * Math.sin(dirLightBeta)
                 ];
-    var directionalLightColor = [0.0, 0.0, 0.0];
+    var directionalLightColor = [1.0, 1.0, 1.0];
 
     //Initilize perspective matrix
     perspectiveMatrix = utils.MakePerspective(90, gl.canvas.width/gl.canvas.height, 0.1, 100.0);
