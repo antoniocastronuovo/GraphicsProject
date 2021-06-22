@@ -7,12 +7,12 @@ var baseDir;
 var assetDir;
 
 var spotLightDirection = [0.0,1.0,0.0];
-var spotLightColor = [1.0,0.0,0.0];
-var positionSpot = [0.0,14.0,0.0];
-var targetSpot = 14.0;
-var decay = 2;
-var coneInSpot = 60;
-var coneOutSpot = 120;
+var spotLightColor = [0.0,1.0,0.0];
+var positionSpot = [0,20.0,15.0];
+var targetSpot = 10;
+var decay = 1;
+var coneInSpot = 0.5; //% wrt cone out
+var coneOutSpot = 5; //this is in degree
 
 //Parameters for Camera
 var cx = 4.5;
@@ -137,10 +137,11 @@ function main() {
     var dirLightAlpha = -utils.degToRad(45); //60
     var dirLightBeta  = -utils.degToRad(80); //120
 
-    var directionalLight = [Math.cos(dirLightAlpha) * Math.cos(dirLightBeta),
+    /*var directionalLight = [Math.cos(dirLightAlpha) * Math.cos(dirLightBeta),
                 Math.sin(dirLightAlpha),
                 Math.cos(dirLightAlpha) * Math.sin(dirLightBeta)
-                ];
+                ];*/
+    var directionalLight = utils.normalize([0.0, -0.5, -0.5], directionalLight);
     var directionalLightColor = [1.0, 1.0, 1.0];
 
     //Initilize perspective matrix
@@ -175,9 +176,9 @@ function main() {
     var targetDistanceHandle = gl.getUniformLocation(program, 'targetDistance');
     var decayHandle = gl.getUniformLocation(program, 'decay');
     var positionSpotHandle = gl.getUniformLocation(program, 'positionSpot');
+    var eyeDirHandle = gl.getUniformLocation(program, 'eyeDir');
 
     var normalMatrixPositionHandle = gl.getUniformLocation(program, 'nMatrix');
-    
 
     loadTexture(2);
 
@@ -190,6 +191,7 @@ function main() {
         cz = lookRadius * Math.cos(utils.degToRad(-angle)) * Math.cos(utils.degToRad(-elevation));
         cx = lookRadius * Math.sin(utils.degToRad(-angle)) * Math.cos(utils.degToRad(-elevation));
         cy = lookRadius * Math.sin(utils.degToRad(-elevation));
+        console.log("cx: " + cx + ", cy: " + cy + ", cz: " + cz);
         viewMatrix = utils.MakeView(cx, cy, cz, elevation, -angle);
         projectionMatrix = utils.multiplyMatrices(perspectiveMatrix, viewMatrix);
     
@@ -204,6 +206,8 @@ function main() {
         gl.uniform3fv(spotLightColor1Handle,spotLightColor);
         gl.uniform3fv(spotLightColor2Handle,spotLightColor);
         gl.uniform3fv(spotLightColor3Handle,spotLightColor);
+
+        gl.uniform3fv(eyeDirHandle,[0.0, 0.0, 0.0]);
 
         gl.uniform1f(targetDistanceHandle,targetSpot);
         gl.uniform1f(coneInHandle,coneInSpot);
