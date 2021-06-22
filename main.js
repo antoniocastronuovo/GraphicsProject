@@ -6,6 +6,14 @@ var shaderDir;
 var baseDir;
 var assetDir;
 
+var spotLightDirection = [0.0,-1.0,0.0];
+var spotLightColor = [1.0,0.0,0.0];
+var positionSpot = [0.0,14.0,0.0];
+var targetSpot = 14.0;
+var decay = 2;
+var coneInSpot = 60;
+var coneOutSpot =120;
+
 //Parameters for Camera
 var cx = 4.5;
 var cy = 0.0;
@@ -133,7 +141,7 @@ function main() {
                 Math.sin(dirLightAlpha),
                 Math.cos(dirLightAlpha) * Math.sin(dirLightBeta)
                 ];
-    var directionalLightColor = [1.0, 1.0, 1.0];
+    var directionalLightColor = [0.0, 0.0, 0.0];
 
     //Initilize perspective matrix
     perspectiveMatrix = utils.MakePerspective(90, gl.canvas.width/gl.canvas.height, 0.1, 100.0);
@@ -152,6 +160,22 @@ function main() {
     var materialDiffColorHandle = gl.getUniformLocation(program, 'mDiffColor');
     var lightDirectionHandle = gl.getUniformLocation(program, 'lightDirection');
     var lightColorHandle = gl.getUniformLocation(program, 'lightColor');
+    
+    var spotLightDirection1Handle = gl.getUniformLocation(program, 'lightDirectionSpot1');
+    var spotLightDirection2Handle = gl.getUniformLocation(program, 'lightDirectionSpot2');
+    var spotLightDirection3Handle = gl.getUniformLocation(program, 'lightDirectionSpot3');
+
+    var spotLightColor1Handle = gl.getUniformLocation(program, 'lightColorSpot1');
+    var spotLightColor2Handle = gl.getUniformLocation(program, 'lightColorSpot2');
+    var spotLightColor3Handle = gl.getUniformLocation(program, 'lightColorSpot3');
+
+    var coneOutHandle = gl.getUniformLocation(program, 'spotConeOut');
+    var coneInHandle = gl.getUniformLocation(program, 'spotConeIn');
+
+    var targetDistanceHandle = gl.getUniformLocation(program, 'targetDistance');
+    var decayHandle = gl.getUniformLocation(program, 'decay');
+    var positionSpotHandle = gl.getUniformLocation(program, 'positionSpot');
+
     var normalMatrixPositionHandle = gl.getUniformLocation(program, 'nMatrix');
     
 
@@ -172,6 +196,20 @@ function main() {
         //Send uniforms of lights to GPU
         gl.uniform3fv(lightColorHandle,  directionalLightColor); //light color
         gl.uniform3fv(lightDirectionHandle,  directionalLight); //light direction
+
+        gl.uniform3fv(spotLightDirection1Handle, spotLightDirection);
+        gl.uniform3fv(spotLightDirection2Handle, spotLightDirection);
+        gl.uniform3fv(spotLightDirection3Handle, spotLightDirection);
+
+        gl.uniform3fv(spotLightColor1Handle,spotLightColor);
+        gl.uniform3fv(spotLightColor2Handle,spotLightColor);
+        gl.uniform3fv(spotLightColor3Handle,spotLightColor);
+
+        gl.uniform1f(targetDistanceHandle,targetSpot);
+        gl.uniform1f(coneInHandle,coneInSpot);
+        gl.uniform1f(coneOutHandle,coneOutSpot);
+        gl.uniform1f(decayHandle,decay);
+        gl.uniform3fv(positionSpotHandle,positionSpot);
 
         drawObjects();
 
