@@ -12,7 +12,7 @@ var positionSpot = [0.0,14.0,0.0];
 var targetSpot = 14.0;
 var decay = 2;
 var coneInSpot = 60;
-var coneOutSpot =120;
+var coneOutSpot = 120;
 
 //Parameters for Camera
 var cx = 4.5;
@@ -135,7 +135,7 @@ async function init(){
 function main() {    
     //Define directional light
     var dirLightAlpha = -utils.degToRad(45); //60
-    var dirLightBeta  = -utils.degToRad(80); //120
+    var dirLightBeta  = -utils.degToRad(ù80); //120
 
     var directionalLight = [Math.cos(dirLightAlpha) * Math.cos(dirLightBeta),
                 Math.sin(dirLightAlpha),
