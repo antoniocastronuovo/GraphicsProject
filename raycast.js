@@ -59,11 +59,6 @@ function myOnMouseDown(ev){
         }
     }
 
-    if(nearestDisc[0] != -1){
-        //game.discs[nearestDisc[0]].node.drawInfo.materialColor = [Math.random(), Math.random(), Math.random()];
-        console.log("Nearest disc hit "+nearestDisc[0] + 1);    
-    }
-
     return game.discs[nearestDisc[0]];
     
             
@@ -71,7 +66,6 @@ function myOnMouseDown(ev){
 
 function normaliseVector(vec){
     var magnitude = Math.sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
-    //console.log("Magnitude" + magnitude);
     var normVec = [vec[0]/magnitude, vec[1]/magnitude, vec[2]/magnitude];
     return normVec;
 }
@@ -107,5 +101,3 @@ function boxHitTest(rayStartPoint, rayNormalisedDir, discCenter, discWidth, disc
         return [true, tmin];
     return [true, tmax];
 }
-
-//window.addEventListener("mouseup", myOnMouseDown);

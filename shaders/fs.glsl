@@ -16,14 +16,16 @@ uniform vec3 lightColor; //directional light color
 uniform vec3 ambientLightUpColor;		  // For hemispheric ambient, this is the color on the top
 uniform vec3 ambientLightLowColor;	  // For hemispheric ambient, this is the bottom color
 
-uniform vec3 spotLightDirection;
+//Parameters for the spot light
+uniform vec3 spotLightDirection; 
 uniform vec3 spotLightColor;
 uniform float spotConeOut;
 uniform float spotConeIn;
 uniform float target;
 uniform float decay;
 uniform vec3 spotLightPosition;
-uniform vec3 eyeDir;
+
+uniform vec3 eyeDir; //Eye direction
 
 uniform sampler2D u_texture; //texture
 
