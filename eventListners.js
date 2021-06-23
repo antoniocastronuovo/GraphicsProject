@@ -1,4 +1,5 @@
  function setEventListners() {
+    //Set the listener to the move button
     var move = document.getElementById("confirm_Move");
     move.addEventListener("click", (e) => {
         var moveFrom = document.getElementById("drop-down-from");
@@ -7,6 +8,7 @@
         game.initMove(moveFrom.value,moveTo.value);
     }, false);
 
+    //Set the listener to the play btn
     var playBtn = document.getElementById("play_btn");
     playBtn.addEventListener("click", (e) => {
         var numOfDiscs = parseInt(document.getElementById("drop-down-difficulty").value);
@@ -82,7 +84,6 @@ function setCameraListeners(){
 
 function setMouseListeners(){
     //Event handlers to rotate camera on mouse dragging
-    var baseHeight = 0.8;
     var fromRod = null;
     var mouseState = false;
     var lastMouseX = -100, lastMouseY = -100;

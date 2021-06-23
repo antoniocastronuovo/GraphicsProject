@@ -6,24 +6,26 @@ var shaderDir;
 var baseDir;
 var assetDir;
 
+//Global variables for the spot lights
 var spotLightDirection = [0.0, 1.0, 0.0];
-var spotLightColor = [0.0, 1.0, 0.0];
-var positionSpot = [4.53, 10.0, 0.0];
+var spotLightColor = [0.0, 1.0, 0.0]; //Green
+var positionSpot = [4.53, 10.0, 0.0]; //Over the third rod
 var targetSpot = 5;
 var decay = 2;
 var coneInSpot = 0.5; //% wrt cone out
 var coneOutSpot = 30; //this is in degree
 
 //Parameters for Camera
-var cx = 4.5;
-var cy = 0.0;
-var cz = 10.0;
+var cx = 4.5; //Pos x of the camera
+var cy = 0.0; //Pos y of the camera
+var cz = 10.0; //Pos z of the camera
 var elevation = -20.0; //0.0 to see perpendicular
-var angle = 0.0;
-
+var angle = 0.0; //Angle of the camera
 var lookRadius = 15.0;
-var scaling = 0.3;
-var deltaFactor = 375;
+
+//Scaling parameters
+var scaling = 0.3; //Scaling of the models
+var deltaFactor = 375; //Factor to manage the shift of the discs with the mouse
 
 //Transformation matrices
 var projectionMatrix, perspectiveMatrix, viewMatrix, worldMatrix, WVPmatrix;
@@ -31,17 +33,17 @@ var projectionMatrix, perspectiveMatrix, viewMatrix, worldMatrix, WVPmatrix;
 //The objects collections
 var nodes = [];
 
-//textures
-var tableTexture;
-var generalTexture;
+//Texture
+var texture;
 
-//The game
+//Game model and init difficulty
 var game;
 var initNumberOfDiscs = 4;
 var maxNumberOfDiscs = 7;
+
 /* Init function: get canvas, compile and link shaders */
 async function init(){
-    //Find the location of the directory
+    //Find the location of the directories
     var path = window.location.pathname;
     var page = path.split("/").pop();
     baseDir = window.location.href.replace(page, '');
@@ -51,7 +53,6 @@ async function init(){
     //Init canvas and context gl
     var canvas = document.getElementById("gameCanvas");
     gl = canvas.getContext("webgl2"); //the context [03-5]
-    //Remember: canvas has origin in the center and goes from -1 to 1 both x and y
     if (!gl) { //If cannot load GL, write error
         document.write("GL context not opened");
         return;
@@ -88,7 +89,7 @@ async function init(){
     tableNode.worldMatrix = utils.multiplyMatrices(utils.MakeTranslateMatrix(0.0, -12.3274, 0.0), utils.MakeScaleMatrix(0.15));
     tableNode.initMatrix = utils.multiplyMatrices(utils.MakeTranslateMatrix(0.0, -12.3274, 0.0), utils.MakeScaleMatrix(0.15));
     tableNode.drawInfo = {
-        materialColor: [0.8, 0.8, 0.8],
+        materialColor: [0.6, 0.6, 0.6],
         mesh: tmpMesh,
     }
     nodes[0] = tableNode;
@@ -148,7 +149,8 @@ function main() {
     var uvAttributeLocation = gl.getAttribLocation(program, "a_uv");  
     gl.enableVertexAttribArray(uvAttributeLocation);
     var textLocation = gl.getUniformLocation(program, "u_texture");
-
+    // sets the uniforms
+    gl.uniform1i(textLocation, 0);
     
     var matrixLocation = gl.getUniformLocation(program, "matrix");
     var vertexMatrixPositionHandle = gl.getUniformLocation(program, "pMatrix");
@@ -159,13 +161,8 @@ function main() {
     var lightColorHandle = gl.getUniformLocation(program, 'lightColor');
     
     var spotLightDirectionHandle = gl.getUniformLocation(program, 'spotLightDirection');
-    var spotLightDirection2Handle = gl.getUniformLocation(program, 'lightDirectionSpot2');
-    var spotLightDirection3Handle = gl.getUniformLocation(program, 'lightDirectionSpot3');
-
     var spotLightColorHandle = gl.getUniformLocation(program, 'spotLightColor');
-    var spotLightColor2Handle = gl.getUniformLocation(program, 'lightColorSpot2');
-    var spotLightColor3Handle = gl.getUniformLocation(program, 'lightColorSpot3');
-
+    
     var coneOutHandle = gl.getUniformLocation(program, 'spotConeOut');
     var coneInHandle = gl.getUniformLocation(program, 'spotConeIn');
 
@@ -190,12 +187,6 @@ function main() {
         viewMatrix = utils.MakeView(cx, cy, cz, elevation, -angle);
         projectionMatrix = utils.multiplyMatrices(perspectiveMatrix, viewMatrix);
     
-        //Update spot light position
-        /*var spotLightMatrix = utils.multiplyMatrices(viewMatrix, utils.MakeWorld(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0));
-        var spotLightInvMatrix = utils.invertMatrix(utils.transposeMatrix(spotLightMatrix));
-        var spotPos = utils.multiplyMatrixVector(spotLightMatrix, [positionSpot[0], positionSpot[1], positionSpot[2], 1]);
-        var spotDir = utils.multiplyMatrix3Vector3(utils.sub3x3from4x4(spotLightInvMatrix), spotLightDirection);*/
-
         //Send uniforms of lights to GPU
         gl.uniform3fv(lightColorHandle,  directionalLightColor); //light color
         gl.uniform3fv(lightDirectionHandle,  directionalLight); //light direction
@@ -220,16 +211,9 @@ function main() {
     }
 
     function drawObjects() {
-        var i = 0;
         nodes.slice(0, game.numberOfDiscs + 2).forEach(node => {
-            if(i === 0) {
-                gl.activeTexture(gl.TEXTURE0 + 1);
-                gl.bindTexture(gl.TEXTURE_2D, tableTexture);
-            }else{
-                gl.activeTexture(gl.TEXTURE0);
-                gl.bindTexture(gl.TEXTURE_2D, generalTexture);
-            }
-            i++;
+            gl.activeTexture(gl.TEXTURE0);
+            gl.bindTexture(gl.TEXTURE_2D, texture);
             //Calculate World-View-Projection matrix
             WVPmatrix = utils.multiplyMatrices(projectionMatrix, node.worldMatrix);
             gl.uniformMatrix4fv(matrixLocation, gl.FALSE, utils.transposeMatrix(WVPmatrix));
@@ -262,11 +246,11 @@ function main() {
 
 function loadTexture(textureIndex) {
     // Create a texture.
-    generalTexture = gl.createTexture();
+    texture = gl.createTexture();
     // use texture unit 0
     gl.activeTexture(gl.TEXTURE0);
     // bind to the TEXTURE_2D bind point of texture unit 0
-    gl.bindTexture(gl.TEXTURE_2D, generalTexture);
+    gl.bindTexture(gl.TEXTURE_2D, texture);
 
     // Asynchronously load an image
     var imgtx = new Image();
@@ -274,7 +258,7 @@ function loadTexture(textureIndex) {
     else imgtx.src = assetDir + "texture" + textureIndex + ".jpg";  
 
     imgtx.onload = function() {
-        gl.bindTexture(gl.TEXTURE_2D, generalTexture);		
+        gl.bindTexture(gl.TEXTURE_2D, texture);		
         //gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, imgtx);	
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true); //WebGL has inverted uv coordinates
         //Define how textures are interpolated whenever their size needs to be incremented or diminished
