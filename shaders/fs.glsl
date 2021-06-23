@@ -3,8 +3,9 @@
 precision mediump float;
 
 in vec3 fsNormal;
-in vec2 uvFS;
 in vec3 fsPosition;
+
+in vec2 uvFS;
 
 out vec4 outColor;
 
@@ -15,18 +16,13 @@ uniform vec3 lightColor; //directional light color
 uniform vec3 ambientLightUpColor;		  // For hemispheric ambient, this is the color on the top
 uniform vec3 ambientLightLowColor;	  // For hemispheric ambient, this is the bottom color
 
-
-uniform vec3 lightDirectionSpot1;
-uniform vec3 lightDirectionSpot2;
-uniform vec3 lightDirectionSpot3;
-uniform vec3 lightColorSpot1;
-uniform vec3 lightColorSpot2;
-uniform vec3 lightColorSpot3;
+uniform vec3 spotLightDirection;
+uniform vec3 spotLightColor;
 uniform float spotConeOut;
 uniform float spotConeIn;
-uniform float targetDistance;
+uniform float target;
 uniform float decay;
-uniform vec3 positionSpot;
+uniform vec3 spotLightPosition;
 uniform vec3 eyeDir;
 
 uniform sampler2D u_texture; //texture
@@ -58,7 +54,7 @@ void main() {
 
   vec3 nNormal = normalize(fsNormal);
   
-  vec3 spotLight = createSpotLight(lightColorSpot1, positionSpot, lightDirectionSpot1, targetDistance, decay, spotConeIn, spotConeOut);  
+  vec3 spotLight = createSpotLight(spotLightColor, spotLightPosition, spotLightDirection, target, decay, spotConeIn, spotConeOut);  
   vec3 diffuse = diffuseBRDF(mDiffColor, lightColor, lightDirection, nNormal);
   
   vec3 myEyeDir = normalize(vec3(0.0, -5.130302, -14.095389));

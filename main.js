@@ -9,13 +9,13 @@ var assetDir;
 var ambientLightLowColor = [1.0,0.0,0.0];
 var ambientLightUpColor = [0.0,1.0,0.0];
 
-var spotLightDirection = [0.0,1.0,0.0];
-var spotLightColor = [0.0,1.0,0.0];
-var positionSpot = [0,20.0,15.0];
-var targetSpot = 10;
-var decay = 1;
+var spotLightDirection = [0.0, 1.0, 0.0];
+var spotLightColor = [0.0, 1.0, 0.0];
+var positionSpot = [4.53, 10.0, 0.0];
+var targetSpot = 5;
+var decay = 2;
 var coneInSpot = 0.5; //% wrt cone out
-var coneOutSpot = 5; //this is in degree
+var coneOutSpot = 30; //this is in degree
 
 //Parameters for Camera
 var cx = 4.5;
@@ -137,13 +137,6 @@ async function init(){
 
 function main() {    
     //Define directional light
-    var dirLightAlpha = -utils.degToRad(45); //60
-    var dirLightBeta  = -utils.degToRad(80); //120
-
-    /*var directionalLight = [Math.cos(dirLightAlpha) * Math.cos(dirLightBeta),
-                Math.sin(dirLightAlpha),
-                Math.cos(dirLightAlpha) * Math.sin(dirLightBeta)
-                ];*/
     var directionalLight = utils.normalize([0.0, -0.5, -0.5], directionalLight);
     var directionalLightColor = [1.0, 1.0, 1.0];
 
@@ -161,15 +154,18 @@ function main() {
 
     
     var matrixLocation = gl.getUniformLocation(program, "matrix");
+    var vertexMatrixPositionHandle = gl.getUniformLocation(program, "pMatrix");
+    var normalMatrixPositionHandle = gl.getUniformLocation(program, 'nMatrix');
+
     var materialDiffColorHandle = gl.getUniformLocation(program, 'mDiffColor');
     var lightDirectionHandle = gl.getUniformLocation(program, 'lightDirection');
     var lightColorHandle = gl.getUniformLocation(program, 'lightColor');
     
-    var spotLightDirection1Handle = gl.getUniformLocation(program, 'lightDirectionSpot1');
+    var spotLightDirectionHandle = gl.getUniformLocation(program, 'spotLightDirection');
     var spotLightDirection2Handle = gl.getUniformLocation(program, 'lightDirectionSpot2');
     var spotLightDirection3Handle = gl.getUniformLocation(program, 'lightDirectionSpot3');
 
-    var spotLightColor1Handle = gl.getUniformLocation(program, 'lightColorSpot1');
+    var spotLightColorHandle = gl.getUniformLocation(program, 'spotLightColor');
     var spotLightColor2Handle = gl.getUniformLocation(program, 'lightColorSpot2');
     var spotLightColor3Handle = gl.getUniformLocation(program, 'lightColorSpot3');
 
@@ -179,12 +175,11 @@ function main() {
     var coneOutHandle = gl.getUniformLocation(program, 'spotConeOut');
     var coneInHandle = gl.getUniformLocation(program, 'spotConeIn');
 
-    var targetDistanceHandle = gl.getUniformLocation(program, 'targetDistance');
+    var targetHandle = gl.getUniformLocation(program, 'target');
     var decayHandle = gl.getUniformLocation(program, 'decay');
-    var positionSpotHandle = gl.getUniformLocation(program, 'positionSpot');
+    var spotLightPositionHandle = gl.getUniformLocation(program, 'spotLightPosition');
     var eyeDirHandle = gl.getUniformLocation(program, 'eyeDir');
 
-    var normalMatrixPositionHandle = gl.getUniformLocation(program, 'nMatrix');
 
     loadTexture(2);
 
@@ -197,35 +192,36 @@ function main() {
         cz = lookRadius * Math.cos(utils.degToRad(-angle)) * Math.cos(utils.degToRad(-elevation));
         cx = lookRadius * Math.sin(utils.degToRad(-angle)) * Math.cos(utils.degToRad(-elevation));
         cy = lookRadius * Math.sin(utils.degToRad(-elevation));
-        console.log("cx: " + cx + ", cy: " + cy + ", cz: " + cz);
+        
         viewMatrix = utils.MakeView(cx, cy, cz, elevation, -angle);
         projectionMatrix = utils.multiplyMatrices(perspectiveMatrix, viewMatrix);
     
+        //Update spot light position
+        /*var spotLightMatrix = utils.multiplyMatrices(viewMatrix, utils.MakeWorld(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0));
+        var spotLightInvMatrix = utils.invertMatrix(utils.transposeMatrix(spotLightMatrix));
+        var spotPos = utils.multiplyMatrixVector(spotLightMatrix, [positionSpot[0], positionSpot[1], positionSpot[2], 1]);
+        var spotDir = utils.multiplyMatrix3Vector3(utils.sub3x3from4x4(spotLightInvMatrix), spotLightDirection);*/
+
         //Send uniforms of lights to GPU
         gl.uniform3fv(lightColorHandle,  directionalLightColor); //light color
         gl.uniform3fv(lightDirectionHandle,  directionalLight); //light direction
 
-        gl.uniform3fv(spotLightDirection1Handle, spotLightDirection);
-        gl.uniform3fv(spotLightDirection2Handle, spotLightDirection);
-        gl.uniform3fv(spotLightDirection3Handle, spotLightDirection);
+        gl.uniform3fv(spotLightDirectionHandle, spotLightDirection);
+        gl.uniform3fv(spotLightColorHandle,spotLightColor);
+        gl.uniform3fv(spotLightPositionHandle, positionSpot);
 
         gl.uniform3fv(spotLightColor1Handle,spotLightColor);
         gl.uniform3fv(spotLightColor2Handle,spotLightColor);
         
         gl.uniform3fv(ambientLightUpColorHandle,ambientLightUpColor);
         gl.uniform3fv(ambientLightLowColorHandle,ambientLightLowColor);
-        
-
-
-
 
         gl.uniform3fv(eyeDirHandle,[0.0, 0.0, 0.0]);
 
-        gl.uniform1f(targetDistanceHandle,targetSpot);
+        gl.uniform1f(targetHandle,targetSpot);
         gl.uniform1f(coneInHandle,coneInSpot);
         gl.uniform1f(coneOutHandle,coneOutSpot);
         gl.uniform1f(decayHandle,decay);
-        gl.uniform3fv(positionSpotHandle,positionSpot);
 
         drawObjects();
 
@@ -248,7 +244,10 @@ function main() {
             //Calculate World-View-Projection matrix
             WVPmatrix = utils.multiplyMatrices(projectionMatrix, node.worldMatrix);
             gl.uniformMatrix4fv(matrixLocation, gl.FALSE, utils.transposeMatrix(WVPmatrix));
-            gl.uniformMatrix4fv(normalMatrixPositionHandle, gl.FALSE, utils.transposeMatrix(node.worldMatrix));
+            
+            gl.uniformMatrix4fv(vertexMatrixPositionHandle, gl.FALSE, utils.transposeMatrix(node.worldMatrix));
+            //gl.uniformMatrix4fv(normalMatrixPositionHandle, gl.FALSE, utils.transposeMatrix(node.worldMatrix));
+            gl.uniformMatrix4fv(normalMatrixPositionHandle, gl.FALSE, utils.invertMatrix(utils.transposeMatrix(node.worldMatrix)));
         
             //This must be done for each object mesh
             gl.bindBuffer(gl.ARRAY_BUFFER, node.drawInfo.mesh.vertexBuffer);

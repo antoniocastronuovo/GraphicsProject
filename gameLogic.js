@@ -201,6 +201,8 @@ Game.prototype.scaleMesurements = function(scaling) {
 Game.prototype.checkWin = function() {
     if(this.rods[2].discs.length == this.discs.length){ //Win
         displayAlert(true,"success","You Won");
+        spotLightColor = [0.0, 1.0, 0.0];
+        unableMoveElements();
     }//else continue the game
 }
 
