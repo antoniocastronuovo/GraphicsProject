@@ -6,6 +6,10 @@ var shaderDir;
 var baseDir;
 var assetDir;
 
+//Global variables for the ambient lightining
+var ambientLightLowColor = [1.0,0.0,0.0];
+var ambientLightUpColor = [0.0,1.0,0.0];
+
 //Global variables for the spot lights
 var spotLightDirection = [0.0, 1.0, 0.0];
 var spotLightColor = [0.0, 1.0, 0.0]; //Green
@@ -162,7 +166,10 @@ function main() {
     
     var spotLightDirectionHandle = gl.getUniformLocation(program, 'spotLightDirection');
     var spotLightColorHandle = gl.getUniformLocation(program, 'spotLightColor');
-    
+
+    var ambientLightUpColorHandle = gl.getUniformLocation(program, 'ambientLightUpColor');
+    var ambientLightLowColorHandle = gl.getUniformLocation(program, 'ambientLightLowColor');
+
     var coneOutHandle = gl.getUniformLocation(program, 'spotConeOut');
     var coneInHandle = gl.getUniformLocation(program, 'spotConeIn');
 
@@ -195,6 +202,11 @@ function main() {
         gl.uniform3fv(spotLightColorHandle,spotLightColor);
         gl.uniform3fv(spotLightPositionHandle, positionSpot);
 
+        gl.uniform3fv(spotLightColor1Handle,spotLightColor);
+        gl.uniform3fv(spotLightColor2Handle,spotLightColor);
+        
+        gl.uniform3fv(ambientLightUpColorHandle,ambientLightUpColor);
+        gl.uniform3fv(ambientLightLowColorHandle,ambientLightLowColor);
 
         gl.uniform3fv(eyeDirHandle,[0.0, 0.0, 0.0]);
 
