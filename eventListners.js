@@ -218,7 +218,7 @@ function setAmbientColorsListeners() {
         ambientLightLowColor = [0.0, 0.0, 0.0];
         loweColorInput.value = "#000000";
         ambientLightUpColor = [0.2, 0.2, 0.2];
-        upperColorInput.value = "#000000";
+        upperColorInput.value = "#333333";
     }, false);
     
 }
