@@ -7,12 +7,12 @@ var baseDir;
 var assetDir;
 
 //Global variables for the ambient lightining
-var ambientLightLowColor = [1.0,0.0,0.0];
-var ambientLightUpColor = [0.0,1.0,0.0];
+var ambientLightLowColor = [0.0, 0.0, 0.0];
+var ambientLightUpColor = [0.2, 0.2, 0.2];
 
 //Global variables for the spot lights
 var spotLightDirection = [0.0, 1.0, 0.0];
-var spotLightColor = [0.0, 1.0, 0.0]; //Green
+var spotLightColor = [0.0, 0.0, 0.0]; //It will become green only on victory
 var positionSpot = [4.53, 10.0, 0.0]; //Over the third rod
 var targetSpot = 5;
 var decay = 2;
@@ -111,6 +111,7 @@ async function init(){
     }
     nodes[1] = baseNode;
     
+    //Creates the discs
     for(let i = 2; i < maxNumberOfDiscs + 2; i++) {
         //The next line must be done in init, since it is an async function, load mesh using OBJ loader library
         objStr = await utils.get_objstr(assetDir + "disc" + (i - 1) + ".obj");
@@ -156,31 +157,32 @@ function main() {
     // sets the uniforms
     gl.uniform1i(textLocation, 0);
     
-    var matrixLocation = gl.getUniformLocation(program, "matrix");
-    var vertexMatrixPositionHandle = gl.getUniformLocation(program, "pMatrix");
-    var normalMatrixPositionHandle = gl.getUniformLocation(program, 'nMatrix');
-
-    var materialDiffColorHandle = gl.getUniformLocation(program, 'mDiffColor');
-    var lightDirectionHandle = gl.getUniformLocation(program, 'lightDirection');
-    var lightColorHandle = gl.getUniformLocation(program, 'lightColor');
-    
-    var spotLightDirectionHandle = gl.getUniformLocation(program, 'spotLightDirection');
-    var spotLightColorHandle = gl.getUniformLocation(program, 'spotLightColor');
-
-    var ambientLightUpColorHandle = gl.getUniformLocation(program, 'ambientLightUpColor');
-    var ambientLightLowColorHandle = gl.getUniformLocation(program, 'ambientLightLowColor');
-
-    var coneOutHandle = gl.getUniformLocation(program, 'spotConeOut');
-    var coneInHandle = gl.getUniformLocation(program, 'spotConeIn');
-
+    //Transformation matrices positions
+    var matrixLocation = gl.getUniformLocation(program, "matrix"); //For the WVP matrix
+    var vertexMatrixPositionHandle = gl.getUniformLocation(program, "pMatrix"); //For the vertex transformations
+    var normalMatrixPositionHandle = gl.getUniformLocation(program, 'nMatrix'); //For the normal transformations
+    //For the material and diffuse color
+    var materialDiffColorHandle = gl.getUniformLocation(program, 'mDiffColor'); //For the material diffuse color of the object
+    var lightDirectionHandle = gl.getUniformLocation(program, 'lightDirection'); //For the light direction
+    var lightColorHandle = gl.getUniformLocation(program, 'lightColor'); //For the light color
+    //Win spot light
+    var spotLightDirectionHandle = gl.getUniformLocation(program, 'spotLightDirection'); //For the spot light direction
+    var spotLightColorHandle = gl.getUniformLocation(program, 'spotLightColor'); //For the spot light color
     var targetHandle = gl.getUniformLocation(program, 'target');
     var decayHandle = gl.getUniformLocation(program, 'decay');
     var spotLightPositionHandle = gl.getUniformLocation(program, 'spotLightPosition');
+    var coneOutHandle = gl.getUniformLocation(program, 'spotConeOut');
+    var coneInHandle = gl.getUniformLocation(program, 'spotConeIn');
+    //Ambient lightining
+    var ambientLightUpColorHandle = gl.getUniformLocation(program, 'ambientLightUpColor');
+    var ambientLightLowColorHandle = gl.getUniformLocation(program, 'ambientLightLowColor');
+    //Eye direction
     var eyeDirHandle = gl.getUniformLocation(program, 'eyeDir');
 
-
+    //Initially load the wood texture
     loadTexture(2);
 
+    //Call the draw scene function
     drawScene();
 
     function drawScene() {
@@ -197,20 +199,19 @@ function main() {
         //Send uniforms of lights to GPU
         gl.uniform3fv(lightColorHandle,  directionalLightColor); //light color
         gl.uniform3fv(lightDirectionHandle,  directionalLight); //light direction
-
+        //Spot light
         gl.uniform3fv(spotLightDirectionHandle, spotLightDirection);
         gl.uniform3fv(spotLightColorHandle,spotLightColor);
         gl.uniform3fv(spotLightPositionHandle, positionSpot);
-
-        gl.uniform3fv(ambientLightUpColorHandle,ambientLightUpColor);
-        gl.uniform3fv(ambientLightLowColorHandle,ambientLightLowColor);
-
-        gl.uniform3fv(eyeDirHandle,[0.0, 0.0, 0.0]);
-
         gl.uniform1f(targetHandle,targetSpot);
         gl.uniform1f(coneInHandle,coneInSpot);
         gl.uniform1f(coneOutHandle,coneOutSpot);
         gl.uniform1f(decayHandle,decay);
+        //Ambient light
+        gl.uniform3fv(ambientLightUpColorHandle,ambientLightUpColor);
+        gl.uniform3fv(ambientLightLowColorHandle,ambientLightLowColor);
+        //Eye direction
+        gl.uniform3fv(eyeDirHandle,[0.0, 0.0, 0.0]);
 
         drawObjects();
 
@@ -223,21 +224,18 @@ function main() {
         nodes.slice(0, game.numberOfDiscs + 2).forEach(node => {
             gl.activeTexture(gl.TEXTURE0);
             gl.bindTexture(gl.TEXTURE_2D, texture);
+            
             //Calculate World-View-Projection matrix
             WVPmatrix = utils.multiplyMatrices(projectionMatrix, node.worldMatrix);
             gl.uniformMatrix4fv(matrixLocation, gl.FALSE, utils.transposeMatrix(WVPmatrix));
-            
             gl.uniformMatrix4fv(vertexMatrixPositionHandle, gl.FALSE, utils.transposeMatrix(node.worldMatrix));
-            //gl.uniformMatrix4fv(normalMatrixPositionHandle, gl.FALSE, utils.transposeMatrix(node.worldMatrix));
             gl.uniformMatrix4fv(normalMatrixPositionHandle, gl.FALSE, utils.invertMatrix(utils.transposeMatrix(node.worldMatrix)));
         
             //This must be done for each object mesh
             gl.bindBuffer(gl.ARRAY_BUFFER, node.drawInfo.mesh.vertexBuffer);
             gl.vertexAttribPointer(positionAttributeLocation, node.drawInfo.mesh.vertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
-            
             gl.bindBuffer(gl.ARRAY_BUFFER, node.drawInfo.mesh.normalBuffer);
             gl.vertexAttribPointer(normalAttributeLocation, node.drawInfo.mesh.normalBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
             gl.bindBuffer(gl.ARRAY_BUFFER, node.drawInfo.mesh.textureBuffer); //Send UV coordinates
             gl.vertexAttribPointer(uvAttributeLocation, node.drawInfo.mesh.textureBuffer.itemSize, gl.FLOAT, false, 0, 0);
 

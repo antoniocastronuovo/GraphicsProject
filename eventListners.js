@@ -19,7 +19,7 @@
         game = new Game(nodes.slice(2, numOfDiscs + 2));
         game.scaleMesurements(scaling);
 
-        //spotLightColor = [0.0, 0.0, 0.0];
+        spotLightColor = [0.0, 0.0, 0.0];
         ableMoveElements();
 
     }, false);
