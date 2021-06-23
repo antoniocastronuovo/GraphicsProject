@@ -7,12 +7,12 @@ var baseDir;
 var assetDir;
 
 //Global variables for the ambient lightining
-var ambientLightLowColor = [1.0,0.0,0.0];
-var ambientLightUpColor = [0.0,1.0,0.0];
+var ambientLightLowColor = [0,0,0];
+var ambientLightUpColor = [0.2,0.2,0.2];
 
 //Global variables for the spot lights
 var spotLightDirection = [0.0, 1.0, 0.0];
-var spotLightColor = [0.0, 1.0, 0.0]; //Green
+var spotLightColor = [0.0, 0.0, 0.0]; //Green
 var positionSpot = [4.53, 10.0, 0.0]; //Over the third rod
 var targetSpot = 5;
 var decay = 2;

@@ -173,7 +173,7 @@ function setMouseListeners(){
             
             var delta = lookRadius / deltaFactor;
 
-            if(isTopDisc && ((dx != 0) || (dy != 0)) ) {
+            if(isTopDisc && ((dx != 0) || (dy != 0)) && !game.checkWin() ) {
                 var oldWorldMatrix = clickedDisc.node.worldMatrix;
                 var translationMatrix = utils.MakeTranslateMatrix(dx * delta, dy * delta, 0.0);
                 var newWorldMatrix = utils.multiplyMatrices(translationMatrix, oldWorldMatrix);
@@ -252,6 +252,8 @@ function unableMoveElements() {
     moveFrom.disabled = true;
     moveTo.disabled = true;
     move.disabled = true;
+
+
 }
 
 function ableMoveElements() {

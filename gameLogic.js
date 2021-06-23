@@ -203,7 +203,9 @@ Game.prototype.checkWin = function() {
         displayAlert(true,"success","You Won");
         spotLightColor = [0.0, 1.0, 0.0];
         unableMoveElements();
-    }//else continue the game
+        return true;
+    }
+    return false;//else continue the game
 }
 
 /*Game.prototype.getSolution = function () {

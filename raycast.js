@@ -60,7 +60,7 @@ function myOnMouseDown(ev){
     }
 
     if(nearestDisc[0] != -1){
-        game.discs[nearestDisc[0]].node.drawInfo.materialColor = [Math.random(), Math.random(), Math.random()];
+        //game.discs[nearestDisc[0]].node.drawInfo.materialColor = [Math.random(), Math.random(), Math.random()];
         console.log("Nearest disc hit "+nearestDisc[0] + 1);    
     }
 
