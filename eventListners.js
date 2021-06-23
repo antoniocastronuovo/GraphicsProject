@@ -16,6 +16,10 @@
         });
         game = new Game(nodes.slice(2, numOfDiscs + 2));
         game.scaleMesurements(scaling);
+
+        spotLightColor = [0.0, 0.0, 0.0];
+        ableMoveElements();
+
     }, false);
     
     //hideSameLocation();
@@ -54,7 +58,6 @@ function setCameraListeners(){
     var canvas = document.getElementById("gameCanvas");
     
     function changeLookRadius(event) {
-        console.log("mouse wheel");
         var nLookRadius = lookRadius + event.wheelDelta/1000.0;
         if((nLookRadius > 2.0) && (nLookRadius < 20.0)) {
             lookRadius = nLookRadius;
@@ -89,7 +92,6 @@ function setMouseListeners(){
     var isTopDisc;
     
     function doMouseDown(event) {
-        console.log("mouse down");
         clickedDisc = myOnMouseDown(event);
         lastMouseX = event.pageX;
         lastMouseY = event.pageY;
@@ -110,7 +112,6 @@ function setMouseListeners(){
     }
 
     function doMouseUp(event) {
-        console.log("mouse up");
         lastMouseX = -100
         lastMouseY = -100;
         var offset = 0;
@@ -163,7 +164,6 @@ function setMouseListeners(){
     }
 
     function doMouseMove(event) {
-        console.log("mouse move");
         if(mouseState) {
             var dx = event.pageX - lastMouseX;
             var dy = lastMouseY - event.pageY;
@@ -241,6 +241,26 @@ function hideSameLocation(){
         }
     });
 
+}
+
+function unableMoveElements() {
+    var moveFrom = document.getElementById("drop-down-from");
+    var moveTo = document.getElementById("drop-down-to");
+    var move = document.getElementById("confirm_Move");
+
+    moveFrom.disabled = true;
+    moveTo.disabled = true;
+    move.disabled = true;
+}
+
+function ableMoveElements() {
+    var moveFrom = document.getElementById("drop-down-from");
+    var moveTo = document.getElementById("drop-down-to");
+    var move = document.getElementById("confirm_Move");
+
+    moveFrom.disabled = false;
+    moveTo.disabled = false;
+    move.disabled = false;
 }
 
 function onFromChange() {

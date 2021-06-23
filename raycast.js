@@ -53,8 +53,6 @@ function myOnMouseDown(ev){
     //for(i = 0; i < objectsInScene.length; i++){
     var nearestDisc = [-1, Infinity]; //disc index and distance
     for(let i = 0; i < game.discs.length; i++){
-        //var hit = raySphereIntersection(rayStartPoint, normalisedRayDir, objectsInScene[i][0], objectsInScene[i][1]);
-        //var hit = hitTest(rayStartPoint, normalisedRayDir, game.discs[i].center, game.discs[i].width / 2);
         var hit = boxHitTest(rayStartPoint, normalisedRayDir, game.discs[i].center, game.discs[i].width, game.discs[i].height);
         if(hit[0] && hit[1] < nearestDisc[1]){
             nearestDisc = [i, hit[1]];
@@ -76,39 +74,6 @@ function normaliseVector(vec){
     //console.log("Magnitude" + magnitude);
     var normVec = [vec[0]/magnitude, vec[1]/magnitude, vec[2]/magnitude];
     return normVec;
-}
-
-//This algorithm is taken from the book Real Time Rendering fourth edition
-//function hit(rayStartPoint, rayNormalisedDir, discCenter, discWidth, discHeight) {
-function hitTest(rayStartPoint, rayNormalisedDir, sphereCentre, sphereRadius){
-    //var leftMin = [discCenter[0] - discWidth / 2, discCenter[1] - discHeight / 2, discCenter[2] + discWidth / 2];
-    //var rightMax = [discCenter[0] + discWidth / 2, discCenter[1] + discHeight / 2, discCenter[2] - discWidth / 2];
-    //Distance between sphere origin and origin of ray
-    var l = [sphereCentre[0] - rayStartPoint[0], sphereCentre[1] - rayStartPoint[1], sphereCentre[2] - rayStartPoint[2]];
-    var l_squared = l[0] * l[0] + l[1] * l[1] + l[2] * l[2]; //distanza tra centro sfera e fotocamera al quadrato
-    //If this is true, the ray origin is inside the sphere so it collides with the sphere
-    if(l_squared < (sphereRadius*sphereRadius)){
-        console.log("ray origin inside sphere");
-        return true;
-    }
-    //Projection of l onto the ray direction 
-    var s = l[0] * rayNormalisedDir[0] + l[1] * rayNormalisedDir[1] + l[2] * rayNormalisedDir[2];
-    //The spere is behind the ray origin so no intersection
-    if(s < 0){
-        console.log("sphere behind ray origin");
-        return false;
-    }
-    //Squared distance from sphere centre and projection s with Pythagorean theorem
-    var m_squared = l_squared - (s*s);
-    //If this is true the ray will miss the sphere
-    if(m_squared > (sphereRadius*sphereRadius)){
-        console.log("m squared > r squared");
-        return false;
-    }
-    //Now we can say that the ray will hit the sphere 
-    console.log("hit");
-    return true;
-    
 }
 
 function boxHitTest(rayStartPoint, rayNormalisedDir, discCenter, discWidth, discHeight) {
