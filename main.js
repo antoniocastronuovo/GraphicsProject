@@ -177,7 +177,7 @@ function main() {
     var ambientLightUpColorHandle = gl.getUniformLocation(program, 'ambientLightUpColor');
     var ambientLightLowColorHandle = gl.getUniformLocation(program, 'ambientLightLowColor');
     //Eye direction
-    var eyeDirHandle = gl.getUniformLocation(program, 'eyeDir');
+    var eyePosHandle = gl.getUniformLocation(program, 'eyePos');
 
     //Initially load the wood texture
     loadTexture(2);
@@ -210,8 +210,8 @@ function main() {
         //Ambient light
         gl.uniform3fv(ambientLightUpColorHandle,ambientLightUpColor);
         gl.uniform3fv(ambientLightLowColorHandle,ambientLightLowColor);
-        //Eye direction
-        gl.uniform3fv(eyeDirHandle,[0.0, 0.0, 0.0]);
+        //Eye position is equal to camera position
+        gl.uniform3fv(eyePosHandle, [cx, cy, cz]);
 
         drawObjects();
 
@@ -220,6 +220,8 @@ function main() {
         window.requestAnimationFrame(drawScene);
     }
 
+    /* Draws all the game elements in the scene: nodes[0] is the table, nodes[1] is
+     * the base and then there are the discs. */
     function drawObjects() {
         nodes.slice(0, game.numberOfDiscs + 2).forEach(node => {
             gl.activeTexture(gl.TEXTURE0);

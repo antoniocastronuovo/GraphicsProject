@@ -25,7 +25,7 @@ uniform float target;
 uniform float decay;
 uniform vec3 spotLightPosition;
 
-uniform vec3 eyeDir; //Eye direction
+uniform vec3 eyePos; //Eye position = camera position
 
 uniform sampler2D u_texture; //texture
 
@@ -55,17 +55,17 @@ vec3 hemisphericAmbient(vec3 upColor,vec3 downColor,vec3 upDir,vec3 normal){
 void main() {
 
   vec3 nNormal = normalize(fsNormal);
-  
+  //Compute the spot light
   vec3 spotLight = createSpotLight(spotLightColor, spotLightPosition, spotLightDirection, target, decay, spotConeIn, spotConeOut);  
+  
+  //Compute BRDF function = diffuse + specular component
   vec3 diffuse = diffuseBRDF(mDiffColor, lightColor, lightDirection, nNormal);
+  vec3 eyeDir = -normalize(eyePos - fsPosition);
+  vec3 specular = specularBRDF(lightDirection, vec3(0.76, 0.58, 0.40), nNormal, eyeDir);
   
-  vec3 myEyeDir = normalize(vec3(0.0, -5.130302, -14.095389));
-  
-  vec3 specular = specularBRDF(lightDirection, vec3(0.76, 0.58, 0.40), nNormal, myEyeDir);
-  
-  vec4 texelColor = texture(u_texture, uvFS); 
-
+  //Compute hemispheric lighting  
   vec3 hemisphericAmbient = hemisphericAmbient(ambientLightUpColor,ambientLightLowColor,vec3(0.0,1.0,0.0),nNormal);
 
-  outColor = vec4(clamp(diffuse + specular + spotLight + hemisphericAmbient, 0.0, 1.0), texelColor.a);
+  //Sum and clamp all the components: diffuse, specular, spot, hemisferic
+  outColor = vec4(clamp(diffuse + specular + spotLight + hemisphericAmbient, 0.0, 1.0), texture(u_texture, uvFS).a);
 }
