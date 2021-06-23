@@ -6,6 +6,9 @@ var shaderDir;
 var baseDir;
 var assetDir;
 
+var ambientLightLowColor = [1.0,0.0,0.0];
+var ambientLightUpColor = [0.0,1.0,0.0];
+
 var spotLightDirection = [0.0,1.0,0.0];
 var spotLightColor = [0.0,1.0,0.0];
 var positionSpot = [0,20.0,15.0];
@@ -170,6 +173,9 @@ function main() {
     var spotLightColor2Handle = gl.getUniformLocation(program, 'lightColorSpot2');
     var spotLightColor3Handle = gl.getUniformLocation(program, 'lightColorSpot3');
 
+    var ambientLightUpColorHandle = gl.getUniformLocation(program, 'ambientLightUpColor');
+    var ambientLightLowColorHandle = gl.getUniformLocation(program, 'ambientLightLowColor');
+
     var coneOutHandle = gl.getUniformLocation(program, 'spotConeOut');
     var coneInHandle = gl.getUniformLocation(program, 'spotConeIn');
 
@@ -205,7 +211,13 @@ function main() {
 
         gl.uniform3fv(spotLightColor1Handle,spotLightColor);
         gl.uniform3fv(spotLightColor2Handle,spotLightColor);
-        gl.uniform3fv(spotLightColor3Handle,spotLightColor);
+        
+        gl.uniform3fv(ambientLightUpColorHandle,ambientLightUpColor);
+        gl.uniform3fv(ambientLightLowColorHandle,ambientLightLowColor);
+        
+
+
+
 
         gl.uniform3fv(eyeDirHandle,[0.0, 0.0, 0.0]);
 

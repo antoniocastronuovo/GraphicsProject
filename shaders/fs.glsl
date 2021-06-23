@@ -12,6 +12,10 @@ uniform vec3 mDiffColor; //material diffuse color
 uniform vec3 lightDirection; // directional light direction vec
 uniform vec3 lightColor; //directional light color
 
+uniform vec3 ambientLightUpColor;		  // For hemispheric ambient, this is the color on the top
+uniform vec3 ambientLightLowColor;	  // For hemispheric ambient, this is the bottom color
+
+
 uniform vec3 lightDirectionSpot1;
 uniform vec3 lightDirectionSpot2;
 uniform vec3 lightDirectionSpot3;
@@ -45,6 +49,11 @@ vec3 createSpotLight(vec3 lightColor, vec3 lightPos, vec3 lightDir, float target
   return spotLight;
 } 
 
+vec3 hemisphericAmbient(vec3 upColor,vec3 downColor,vec3 upDir,vec3 normal){
+  vec3 hemispheric = ((dot(normal,upDir)+1.0)/2.0*upColor +(1.0-dot(normal,upDir))/2.0*downColor);
+  return hemispheric;
+}
+
 void main() {
 
   vec3 nNormal = normalize(fsNormal);
@@ -58,5 +67,7 @@ void main() {
   
   vec4 texelColor = texture(u_texture, uvFS); 
 
-  outColor = vec4(clamp(diffuse + specular + spotLight, 0.0, 1.0), texelColor.a);
+  vec4 hemisphericAmbient = hemisphericAmbient(ambientLightUpColor,ambientLightLowColor,vec3(0.0,1.0,0.0),nNormal);
+
+  outColor = vec4(clamp(diffuse + specular + spotLight + hemisphericAmbient, 0.0, 1.0), texelColor.a);
 }
