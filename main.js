@@ -202,9 +202,6 @@ function main() {
         gl.uniform3fv(spotLightColorHandle,spotLightColor);
         gl.uniform3fv(spotLightPositionHandle, positionSpot);
 
-        gl.uniform3fv(spotLightColor1Handle,spotLightColor);
-        gl.uniform3fv(spotLightColor2Handle,spotLightColor);
-        
         gl.uniform3fv(ambientLightUpColorHandle,ambientLightUpColor);
         gl.uniform3fv(ambientLightLowColorHandle,ambientLightLowColor);
 

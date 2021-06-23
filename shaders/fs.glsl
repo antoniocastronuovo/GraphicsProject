@@ -63,7 +63,7 @@ void main() {
   
   vec4 texelColor = texture(u_texture, uvFS); 
 
-  vec4 hemisphericAmbient = hemisphericAmbient(ambientLightUpColor,ambientLightLowColor,vec3(0.0,1.0,0.0),nNormal);
+  vec3 hemisphericAmbient = hemisphericAmbient(ambientLightUpColor,ambientLightLowColor,vec3(0.0,1.0,0.0),nNormal);
 
   outColor = vec4(clamp(diffuse + specular + spotLight + hemisphericAmbient, 0.0, 1.0), texelColor.a);
 }
