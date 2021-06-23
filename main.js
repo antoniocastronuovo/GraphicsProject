@@ -1,17 +1,17 @@
 "use strict";
 
-var program;
-var gl;
+var program;    // Program composed by the two shaders
+var gl;         // The WebGL rendering context associated to the canvas
 var shaderDir; 
 var baseDir;
 var assetDir;
 
-//Global variables for the ambient lightining
-var ambientLightLowColor = [0.0, 0.0, 0.0];
-var ambientLightUpColor = [0.2, 0.2, 0.2];
+//Global variables for the ambient lighting
+var ambientLightLowColor = [0.0, 0.0, 0.0];     //Lower color of the Ambient
+var ambientLightUpColor = [0.2, 0.2, 0.2];      //Upper color of the Ambient
 
 //Global variables for the spot lights
-var spotLightDirection = [0.0, 1.0, 0.0];
+var spotLightDirection = [0.0, 1.0, 0.0];  
 var spotLightColor = [0.0, 0.0, 0.0]; //It will become green only on victory
 var positionSpot = [4.53, 10.0, 0.0]; //Over the third rod
 var targetSpot = 5;
@@ -62,7 +62,7 @@ async function init(){
         return;
     }
 
-    setMouseListeners();
+    // Set the listners of the buttons and the mouse
     setEventListners();
 
     //Clear the canvas and enable depth testing
@@ -72,7 +72,7 @@ async function init(){
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.enable(gl.DEPTH_TEST);
 
-    /*await wait since the asynchronous funtion loadFiles is completed and when 
+    /* await wait since the asynchronous funtion loadFiles is completed and when 
      * it is completed use the callback function passed as second argument.
      * Function createShader and createProgram do what we have seen in 03*/
     await utils.loadFiles([shaderDir + 'vs.glsl', shaderDir + 'fs.glsl'], function (shaderText) {
@@ -82,54 +82,51 @@ async function init(){
     });
     gl.useProgram(program);
 
-    
-    /* INIT OBJECTS */ 
-    //The next line must be done in init, since it is an async function, load mesh using OBJ loader library
-    var objStr = await utils.get_objstr(assetDir + "uploads_files_821916_Table.obj");
-    var tmpMesh = new OBJ.Mesh(objStr);
-    OBJ.initMeshBuffers(gl, tmpMesh);
-
-    var tableNode = new Node();
-    tableNode.worldMatrix = utils.multiplyMatrices(utils.MakeTranslateMatrix(0.0, -12.3274, 0.0), utils.MakeScaleMatrix(0.15));
-    tableNode.initMatrix = utils.multiplyMatrices(utils.MakeTranslateMatrix(0.0, -12.3274, 0.0), utils.MakeScaleMatrix(0.15));
-    tableNode.drawInfo = {
-        materialColor: [0.6, 0.6, 0.6],
-        mesh: tmpMesh,
-    }
-    nodes[0] = tableNode;
-
-    var objStr = await utils.get_objstr(assetDir + "base.obj");
-    var tmpMesh = new OBJ.Mesh(objStr);
-    OBJ.initMeshBuffers(gl, tmpMesh);
-
-    var baseNode = new Node();
-    baseNode.worldMatrix = utils.MakeScaleMatrix(scaling);
-    baseNode.initMatrix = utils.MakeScaleMatrix(scaling);
-    baseNode.drawInfo = {
-        materialColor: [1.0, 1.0, 1.0],
-        mesh: tmpMesh,
-    }
-    nodes[1] = baseNode;
-    
-    //Creates the discs
-    for(let i = 2; i < maxNumberOfDiscs + 2; i++) {
+     /* INIT OBJECTS */ 
         //The next line must be done in init, since it is an async function, load mesh using OBJ loader library
-        objStr = await utils.get_objstr(assetDir + "disc" + (i - 1) + ".obj");
-        tmpMesh = new OBJ.Mesh(objStr);
+        var objStr = await utils.get_objstr(assetDir + "uploads_files_821916_Table.obj");
+        var tmpMesh = new OBJ.Mesh(objStr);
         OBJ.initMeshBuffers(gl, tmpMesh);
-
-        var diffColor = [1.0, 1.0, 1.0];
-        nodes[i] = new Node();
-        nodes[i].worldMatrix = utils.MakeScaleMatrix(scaling);
-        nodes[i].initMatrix = utils.MakeScaleMatrix(scaling);
-        nodes[i].drawInfo = {
-            materialColor: diffColor,
+    
+        var tableNode = new Node();
+        tableNode.worldMatrix = utils.multiplyMatrices(utils.MakeTranslateMatrix(0.0, -12.3274, 0.0), utils.MakeScaleMatrix(0.15));
+        tableNode.initMatrix = utils.multiplyMatrices(utils.MakeTranslateMatrix(0.0, -12.3274, 0.0), utils.MakeScaleMatrix(0.15));
+        tableNode.drawInfo = {
+            materialColor: [0.6, 0.6, 0.6],
             mesh: tmpMesh,
         }
-        nodes[i].setParent(nodes[1]);
-    }
-
+        nodes[0] = tableNode;
     
+        var objStr = await utils.get_objstr(assetDir + "base.obj");
+        var tmpMesh = new OBJ.Mesh(objStr);
+        OBJ.initMeshBuffers(gl, tmpMesh);
+    
+        var baseNode = new Node();
+        baseNode.worldMatrix = utils.MakeScaleMatrix(scaling);
+        baseNode.initMatrix = utils.MakeScaleMatrix(scaling);
+        baseNode.drawInfo = {
+            materialColor: [1.0, 1.0, 1.0],
+            mesh: tmpMesh,
+        }
+        nodes[1] = baseNode;
+    
+        //Creates the discs
+        for(let i = 2; i < maxNumberOfDiscs + 2; i++) {
+            //The next line must be done in init, since it is an async function, load mesh using OBJ loader library
+            objStr = await utils.get_objstr(assetDir + "disc" + (i - 1) + ".obj");
+            tmpMesh = new OBJ.Mesh(objStr);
+            OBJ.initMeshBuffers(gl, tmpMesh);
+    
+            nodes[i] = new Node();
+            nodes[i].worldMatrix = utils.MakeScaleMatrix(scaling);
+            nodes[i].initMatrix = utils.MakeScaleMatrix(scaling);
+            nodes[i].drawInfo = {
+                materialColor: [1.0, 1.0, 1.0],
+                mesh: tmpMesh,
+            }
+            nodes[i].setParent(nodes[1]);
+        }
+
     //Create the game
     var discNodes = nodes.slice(2);
     game = new Game(discNodes.slice(0, initNumberOfDiscs));
@@ -138,15 +135,23 @@ async function init(){
     main();
 }
 
+
+
 function main() {    
     //Define directional light
-    var directionalLight = utils.normalize([0.0, -0.5, -0.5], directionalLight);
-    var directionalLightColor = [0.7, 0.7, 0.7];
+    var lightDirection = utils.normalize([0.0, -0.5, -0.5], lightDirection);
+    var lightColor = [0.7, 0.7, 0.7];
 
     //Initilize perspective matrix
+    /* Make persperctive takes: 
+        - the vertical field of view
+        - the aspect ratio
+        - the distance of the near plane
+        - distance of far plane
+    */
     perspectiveMatrix = utils.MakePerspective(90, gl.canvas.width/gl.canvas.height, 0.1, 100.0);
 
-    //Links mesh attributes to shader attributes
+    //Links mesh attributes to shader attributes, we activate them because they are attributes and not uniforms
     var positionAttributeLocation = gl.getAttribLocation(program, "inPosition");  
     gl.enableVertexAttribArray(positionAttributeLocation);
     var normalAttributeLocation = gl.getAttribLocation(program, "inNormal");  
@@ -154,6 +159,7 @@ function main() {
     var uvAttributeLocation = gl.getAttribLocation(program, "a_uv");  
     gl.enableVertexAttribArray(uvAttributeLocation);
     var textLocation = gl.getUniformLocation(program, "u_texture");
+    
     // sets the uniforms
     gl.uniform1i(textLocation, 0);
     
@@ -197,8 +203,8 @@ function main() {
         projectionMatrix = utils.multiplyMatrices(perspectiveMatrix, viewMatrix);
     
         //Send uniforms of lights to GPU
-        gl.uniform3fv(lightColorHandle,  directionalLightColor); //light color
-        gl.uniform3fv(lightDirectionHandle,  directionalLight); //light direction
+        gl.uniform3fv(lightColorHandle,  lightColor); //light color
+        gl.uniform3fv(lightDirectionHandle,  lightDirection); //light direction
         //Spot light
         gl.uniform3fv(spotLightDirectionHandle, spotLightDirection);
         gl.uniform3fv(spotLightColorHandle,spotLightColor);
@@ -223,32 +229,34 @@ function main() {
     /* Draws all the game elements in the scene: nodes[0] is the table, nodes[1] is
      * the base and then there are the discs. */
     function drawObjects() {
-        nodes.slice(0, game.numberOfDiscs + 2).forEach(node => {
+        for(let i=0; i < game.numberOfDiscs + 2; i++){
             gl.activeTexture(gl.TEXTURE0);
             gl.bindTexture(gl.TEXTURE_2D, texture);
             
             //Calculate World-View-Projection matrix
-            WVPmatrix = utils.multiplyMatrices(projectionMatrix, node.worldMatrix);
+            WVPmatrix = utils.multiplyMatrices(projectionMatrix, nodes[i].worldMatrix);
+
+            // we pass the various matrixes to WebGl by transposing them because WebGl handles matrixes by columns
             gl.uniformMatrix4fv(matrixLocation, gl.FALSE, utils.transposeMatrix(WVPmatrix));
-            gl.uniformMatrix4fv(vertexMatrixPositionHandle, gl.FALSE, utils.transposeMatrix(node.worldMatrix));
-            gl.uniformMatrix4fv(normalMatrixPositionHandle, gl.FALSE, utils.invertMatrix(utils.transposeMatrix(node.worldMatrix)));
+            gl.uniformMatrix4fv(vertexMatrixPositionHandle, gl.FALSE, utils.transposeMatrix(nodes[i].worldMatrix));
+            gl.uniformMatrix4fv(normalMatrixPositionHandle, gl.FALSE, utils.invertMatrix(utils.transposeMatrix(nodes[i].worldMatrix)));
         
             //This must be done for each object mesh
-            gl.bindBuffer(gl.ARRAY_BUFFER, node.drawInfo.mesh.vertexBuffer);
-            gl.vertexAttribPointer(positionAttributeLocation, node.drawInfo.mesh.vertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
-            gl.bindBuffer(gl.ARRAY_BUFFER, node.drawInfo.mesh.normalBuffer);
-            gl.vertexAttribPointer(normalAttributeLocation, node.drawInfo.mesh.normalBuffer.itemSize, gl.FLOAT, false, 0, 0);
-            gl.bindBuffer(gl.ARRAY_BUFFER, node.drawInfo.mesh.textureBuffer); //Send UV coordinates
-            gl.vertexAttribPointer(uvAttributeLocation, node.drawInfo.mesh.textureBuffer.itemSize, gl.FLOAT, false, 0, 0);
+            gl.bindBuffer(gl.ARRAY_BUFFER, nodes[i].drawInfo.mesh.vertexBuffer);
+            gl.vertexAttribPointer(positionAttributeLocation, nodes[i].drawInfo.mesh.vertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
+            gl.bindBuffer(gl.ARRAY_BUFFER, nodes[i].drawInfo.mesh.normalBuffer);
+            gl.vertexAttribPointer(normalAttributeLocation, nodes[i].drawInfo.mesh.normalBuffer.itemSize, gl.FLOAT, false, 0, 0);
+            gl.bindBuffer(gl.ARRAY_BUFFER, nodes[i].drawInfo.mesh.textureBuffer); //Send UV coordinates
+            gl.vertexAttribPointer(uvAttributeLocation, nodes[i].drawInfo.mesh.textureBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, node.drawInfo.mesh.indexBuffer);
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, nodes[i].drawInfo.mesh.indexBuffer);
 
             //Set object diffuse color
-            gl.uniform3fv(materialDiffColorHandle, node.drawInfo.materialColor);
+            gl.uniform3fv(materialDiffColorHandle, nodes[i].drawInfo.materialColor);
 
             //Draw elements
-            gl.drawElements(gl.TRIANGLES, node.drawInfo.mesh.indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
-        });
+            gl.drawElements(gl.TRIANGLES, nodes[i].drawInfo.mesh.indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+        }
     }
 
 }
@@ -258,12 +266,12 @@ function loadTexture(textureIndex) {
     texture = gl.createTexture();
     // use texture unit 0
     gl.activeTexture(gl.TEXTURE0);
-    // bind to the TEXTURE_2D bind point of texture unit 0
+    // bind to the TEXTURE_2D 
     gl.bindTexture(gl.TEXTURE_2D, texture);
 
     // Asynchronously load an image
     var imgtx = new Image();
-    if(textureIndex == 1) imgtx.src = assetDir + "texture" + textureIndex + ".png";
+    if(textureIndex === 1) imgtx.src = assetDir + "texture" + textureIndex + ".png";
     else imgtx.src = assetDir + "texture" + textureIndex + ".jpg";  
 
     imgtx.onload = function() {
@@ -271,16 +279,21 @@ function loadTexture(textureIndex) {
         //gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, imgtx);	
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true); //WebGL has inverted uv coordinates
         //Define how textures are interpolated whenever their size needs to be incremented or diminished
+        
+        // linear interpolation applied to the texture
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+
+        //for avoiding MipMap generation of the Texture (not all the textures has dimension PowOf2)
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
         //gl.generateMipmap(gl.TEXTURE_2D); //smallest copies of the texture
+        
         //Load the image data in the texture object (in the GPU)
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, imgtx);	
     }     
 }
-
 
 
 window.addEventListener("load", e => {

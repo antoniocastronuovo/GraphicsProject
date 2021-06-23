@@ -4,7 +4,6 @@ precision mediump float;
 
 in vec3 fsNormal;
 in vec3 fsPosition;
-
 in vec2 uvFS;
 
 out vec4 outColor;
@@ -25,9 +24,9 @@ uniform float target;
 uniform float decay;
 uniform vec3 spotLightPosition;
 
-uniform vec3 eyePos; //Eye position = camera position
+uniform vec3 eyePos;          //Eye position = camera position
 
-uniform sampler2D u_texture; //texture
+uniform sampler2D u_texture;  //Texture slot that we are using (it is always 0 because we have only one texture)
 
 //Compute lambert diffuse color
 vec3 diffuseBRDF(vec3 matDiffuseColor, vec3 lColor, vec3 lDir, vec3 normalVec) {
@@ -61,7 +60,7 @@ void main() {
   //Compute BRDF function = diffuse + specular component
   vec3 diffuse = diffuseBRDF(mDiffColor, lightColor, lightDirection, nNormal);
   vec3 eyeDir = -normalize(eyePos - fsPosition);
-  vec3 specular = specularBRDF(lightDirection, vec3(0.76, 0.58, 0.40), nNormal, eyeDir);
+  vec3 specular = specularBRDF(lightDirection, vec3(1.0,1.0,1.0), nNormal, eyeDir); //0.76, 0.58, 0.40
   
   //Compute hemispheric lighting  
   vec3 hemisphericAmbient = hemisphericAmbient(ambientLightUpColor,ambientLightLowColor,vec3(0.0,1.0,0.0),nNormal);

@@ -17,7 +17,7 @@ function Game(_discNodes) {
     this.finalAltitude = 0.0;
     this.currentShift = 0.0;
     this.movingDisc = null;
-    this.shiftDistance = 0.0;
+    this.shiftDistance = 0.0;  // Orizzontal Distance between the from rod and the to rod
     this.discIsMoving = false;
     this.fromRod = 0;
     this.toRod = 0;
@@ -116,7 +116,7 @@ Game.prototype.move = function() {
         var dx = 0.0, dy = 0.0, dz = 0.0;
 
         if(this.isMovingUp) {
-            console.log("UP");
+            // UP 
             if(this.currentAltitude < this.maxAltitude) {
                 deltaShift = (this.currentAltitude + this.movingSpeed <= this.maxAltitude) ? this.movingSpeed : (this.maxAltitude - this.currentAltitude);
                 translationMatrix = utils.MakeTranslateMatrix(0.0, deltaShift, 0.0);
@@ -127,7 +127,7 @@ Game.prototype.move = function() {
                 (this.fromRod < this.toRod) ? this.isMovingRight = true : this.isMovingLeft = true;
             }
         }else if(this.isMovingRight) {
-            console.log("RIGHT");
+            // RIGHT 
             if(this.currentShift < this.shiftDistance) {
                 deltaShift = (this.currentShift + this.movingSpeed <= this.shiftDistance) ? this.movingSpeed : (this.shiftDistance - this.currentShift);
                 translationMatrix = utils.MakeTranslateMatrix(deltaShift, 0.0, 0.0);
@@ -139,7 +139,7 @@ Game.prototype.move = function() {
                 this.currentShift = 0.0;
             }
         }else if(this.isMovingLeft) {
-            console.log("LEFT");
+            // LEFT
             if(this.currentShift < this.shiftDistance) {
                 deltaShift = (this.currentShift + this.movingSpeed <= this.shiftDistance) ? this.movingSpeed : (this.shiftDistance - this.currentShift);
                 translationMatrix = utils.MakeTranslateMatrix(- deltaShift, 0.0, 0.0);
@@ -151,7 +151,7 @@ Game.prototype.move = function() {
                 this.currentShift = 0.0;
             }
         }else if(this.isMovingDown) {
-            console.log("DOWN");
+            // DOWN
             if(this.currentAltitude > this.finalAltitude) {
                 deltaShift = (this.currentAltitude - this.movingSpeed >= this.finalAltitude) ? this.movingSpeed : (this.currentAltitude - this.finalAltitude);
                 translationMatrix = utils.MakeTranslateMatrix(0.0, - deltaShift, 0.0);
@@ -168,14 +168,15 @@ Game.prototype.move = function() {
                 //Check win
                 this.checkWin();
             }
-        }else {
-            console.log("NO MOVING");
         }
-
+        //Once finished the movement
+        
         var newWorldMatrix = utils.multiplyMatrices(translationMatrix, oldWorldMatrix);
         this.movingDisc.node.updateWorldMatrix(newWorldMatrix);
         this.movingDisc.center = [this.movingDisc.center[0] + dx, this.movingDisc.center[1] + dy, this.movingDisc.center[2] + dz];
-    }
+    } 
+    // NO MOVING 
+
 }
 
 Game.prototype.scaleMesurements = function(scaling) {
@@ -207,49 +208,3 @@ Game.prototype.checkWin = function() {
     }
     return false;//else continue the game
 }
-
-/*Game.prototype.getSolution = function () {
-    var solution = [], rods = [];
-    rods[0] = this.rods[0].discs.slice();
-    rods[1] = this.rods[1].discs.slice();
-    rods[2] = this.rods[2].discs.slice();
-    
-    function hanoi(n, destination) {
-        if(n == 1) {
-            var rodIndex = findDiscRodPosition(1); //find smallest disc
-            if(rodIndex != destination) {
-                rods[destination - 1].push(rods[rodIndex - 1].pop());
-                solution.push([rodIndex, destination]);
-            }
-        }else if(n > 1){
-            var rodIndex = findDiscRodPosition(n - 1);
-            if(rodIndex != destination) {
-                var tmpRod; //helper rod
-                for(let i = 1; i<= 3; i++) {
-                    if(rodIndex != i && destination != i) {
-                        tmpRod = i;
-                        break;
-                    }
-                }
-
-                hanoi(n - 1, temporary);
-                rods[destination - 1].push(rods[rodIndex - 1].pop());
-                solution.push([rodIndex, destination]);
-            }
-            //move all n-1 smaller discs to destination rod, too
-            hanoi(n - 1, destination);
-        }
-    }
-
-    function findDiscRodPosition(discSize) {
-        for(let i=0; i<3; i++){}
-            rods[i].forEach(disc => {
-                if(disc.size == discSize)
-                    return i + 1; 
-            });
-        }
-        return -1;
-    }
-
-    return hanoi(this.discs.length, 3);
-}*/

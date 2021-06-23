@@ -9,24 +9,26 @@
     }, false);
 
     //Set the listener to the play btn
-    var playBtn = document.getElementById("play_btn");
-    playBtn.addEventListener("click", (e) => {
+    var resetBtn = document.getElementById("reset_btn");
+    resetBtn.addEventListener("click", (e) => {
         var numOfDiscs = parseInt(document.getElementById("drop-down-difficulty").value);
         //Reset init matrix
         nodes.forEach(node => {
+            // Copy the initial world matrix into the actual world matrix
             node.worldMatrix = node.initMatrix.slice();
         });
         game = new Game(nodes.slice(2, numOfDiscs + 2));
         game.scaleMesurements(scaling);
 
         spotLightColor = [0.0, 0.0, 0.0];
-        ableMoveElements();
+        enableMoveElements();
 
     }, false);
     
     //hideSameLocation();
     setCameraListeners();
     setAmbientColorsListeners();
+    setMouseListeners();
 
     var moveFrom = document.getElementById("drop-down-from");
     moveFrom.addEventListener("change", onFromChange, false);
@@ -290,7 +292,7 @@ function unableMoveElements() {
 
 }
 
-function ableMoveElements() {
+function enableMoveElements() {
     var moveFrom = document.getElementById("drop-down-from");
     var moveTo = document.getElementById("drop-down-to");
     var move = document.getElementById("confirm_Move");
