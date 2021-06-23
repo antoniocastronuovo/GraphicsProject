@@ -77,13 +77,19 @@
             <option value="4">Marble</option>
           </select>
           <p class="text-center mt-2"><b> Camera options </b></p>
-          <div >
+          <div>
             <input id="elevationSlider" type="range" min="-90" max="90" step="1" value="-20"/> <span id="slider1">Elev:-20° </span>  <br/>	
           </div>
-          <div >      
+          <div>      
             <input id="angleSlider" type="range" min="0" max="180" step="1" value="0"/> <span id="slider2">Angle:0° </span><br/>	
           </div>
-        </td> 
+
+          <p class="text-center mt-2"><b>Ambient lighting:</b></p>
+          <div>
+            <input type="color" id="upperColor" value="#000000"> <span id="slider1">Upper color</span><br/>	    
+            <input type="color" id="lowerColor" value="#333333"> <span id="slider1">Lower color</span><br/>	
+          </div>
+        </td>
       </tr>
 	</table>
 
