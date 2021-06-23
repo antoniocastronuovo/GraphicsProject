@@ -190,6 +190,10 @@ function setMouseListeners(){
 }
 
 function setAmbientColorsListeners() {
+    var loweColorInput = document.getElementById("lowerColor");
+    var upperColorInput = document.getElementById("upperColor");
+    var resetBtn = document.getElementById("resetColors_btn");
+    
     function hexToRGB(c) {
         if(/^#([a-f0-9]{3}){1,2}$/.test(c)){
             if(c.length== 4){
@@ -200,16 +204,22 @@ function setAmbientColorsListeners() {
         }
         return '';
     }
-    document.getElementById("lowerColor").addEventListener("input", e => {
+    loweColorInput.addEventListener("input", e => {
         var rgb = hexToRGB(e.target.value);
         ambientLightLowColor = [rgb[0]/255, rgb[1]/255, rgb[2]/255];
     }, false);
 
-    document.getElementById("upperColor").addEventListener("input", e => {
+    upperColorInput.addEventListener("input", e => {
         var rgb = hexToRGB(e.target.value);
         ambientLightUpColor = [rgb[0]/255, rgb[1]/255, rgb[2]/255];
     }, false);
 
+    resetBtn.addEventListener("click", e => {
+        ambientLightLowColor = [0.0, 0.0, 0.0];
+        loweColorInput.value = "#000000";
+        ambientLightUpColor = [0.2, 0.2, 0.2];
+        upperColorInput.value = "#000000";
+    }, false);
     
 }
 

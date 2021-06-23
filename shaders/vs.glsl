@@ -26,5 +26,4 @@ void main() {
   //The clip-space output position of the current vertex
   gl_Position = matrix * vec4(inPosition, 1.0);
 
-  
 }
