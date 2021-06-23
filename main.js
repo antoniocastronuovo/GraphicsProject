@@ -141,7 +141,7 @@ async function init(){
 function main() {    
     //Define directional light
     var directionalLight = utils.normalize([0.0, -0.5, -0.5], directionalLight);
-    var directionalLightColor = [1.0, 1.0, 1.0];
+    var directionalLightColor = [0.7, 0.7, 0.7];
 
     //Initilize perspective matrix
     perspectiveMatrix = utils.MakePerspective(90, gl.canvas.width/gl.canvas.height, 0.1, 100.0);
