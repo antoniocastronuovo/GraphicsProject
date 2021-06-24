@@ -34,6 +34,7 @@ vec3 diffuseBRDF(vec3 matDiffuseColor, vec3 lColor, vec3 lDir, vec3 normalVec) {
   return texColor.rgb * matDiffuseColor * lColor * clamp(dot(-lDir, normalVec), 0.0, 1.0);
 }
 
+//Compute Phong specular color
 vec3 specularBRDF(vec3 lightDir, vec3 lightColor, vec3 normalVec, vec3 eyeDirVec) {
   vec3 refVec = -reflect(lightDir, normalVec);
   vec3 specular = pow(clamp(dot(eyeDirVec, refVec), 0.0, 1.0), 128.0) * lightColor;

@@ -1,11 +1,13 @@
 "use strict";
 
-function myOnMouseDown(ev){
+function getClickedDisc(ev){
     //These commented lines of code only work if the canvas is full screen
-    /*console.log("ClientX "+ev.clientX+" ClientY "+ev.clientY);
+    //clientX(Y) is the X(Y) position with respect the the top left corner of the viewport
+    /*
+    console.log("ClientX "+ev.clientX+" ClientY "+ev.clientY);
     var normX = (2*ev.clientX)/ gl.canvas.width - 1;
     var normY = 1 - (2*ev.clientY) / gl.canvas.height;
-    console.log("NormX "+normX+" NormY "+normY);*/
+    console.log("NormX "+normX+" NormY "+normY);    */
 
     //This is a way of calculating the coordinates of the click in the canvas taking into account its possible displacement in the page
     var top = 0.0, left = 0.0;
@@ -16,41 +18,39 @@ function myOnMouseDown(ev){
         canvas = canvas.offsetParent;
     }
     console.log("left "+left+" top "+top);
+
+    // x and y are the coordinates of the click with respect to the canvas top-left corner of the canvas
     var x = ev.clientX - left;
     var y = ev.clientY - top;
         
     //Here we calculate the normalised device coordinates from the pixel coordinates of the canvas
-    //console.log("ClientX "+x+" ClientY "+y);
+    
     var normX = (2*x)/ gl.canvas.width - 1;
     var normY = 1 - (2*y) / gl.canvas.height;
-    //console.log("NormX "+normX+" NormY "+normY);
 
     //We need to go through the transformation pipeline in the inverse order so we invert the matrices
     var projInv = utils.invertMatrix(perspectiveMatrix);
     var viewInv = utils.invertMatrix(viewMatrix);
     
-    //Find the point (un)projected on the near plane, from clip space coords to eye coords
-    //z = -1 makes it so the point is on the near plane
+    //Find the point (un)projected on the near plane, from clip space coords to eye coords (= camera coordinates)
+    //z = -1 means that the point is on the near plane
     //w = 1 is for the homogeneous coordinates in clip space
     var pointEyeCoords = utils.multiplyMatrixVector(projInv, [normX, normY, -1, 1]);
-    //console.log("Point eye coords "+pointEyeCoords);
 
-    //This finds the direction of the ray in eye space
+    //This finds the direction of the ray in eye space (= camera space)
     //Formally, to calculate the direction you would do dir = point - eyePos but since we are in eye space eyePos = [0,0,0] 
     //w = 0 is because this is not a point anymore but is considered as a direction
     var rayEyeCoords = [pointEyeCoords[0], pointEyeCoords[1], pointEyeCoords[2], 0];
-
     
     //We find the direction expressed in world coordinates by multipling with the inverse of the view matrix
     var rayDir = utils.multiplyMatrixVector(viewInv, rayEyeCoords);
-    //console.log("Ray direction "+rayDir);
+
     var normalisedRayDir = normaliseVector(rayDir);
-    //console.log("normalised ray dir "+normalisedRayDir);
+
     //The ray starts from the camera in world coordinates
     var rayStartPoint = [cx, cy, cz];
     
-    //We iterate on all the objects in the scene to check for collisions
-    //for(i = 0; i < objectsInScene.length; i++){
+    //We iterate on all the discs in the scene to check what is the disc that first intersects the ray    
     var nearestDisc = [-1, Infinity]; //disc index and distance
     for(let i = 0; i < game.discs.length; i++){
         var hit = boxHitTest(rayStartPoint, normalisedRayDir, game.discs[i].center, game.discs[i].width, game.discs[i].height);
@@ -58,10 +58,7 @@ function myOnMouseDown(ev){
             nearestDisc = [i, hit[1]];
         }
     }
-
-    return game.discs[nearestDisc[0]];
-    
-            
+    return game.discs[nearestDisc[0]];          
 }
 
 function normaliseVector(vec){
@@ -70,6 +67,12 @@ function normaliseVector(vec){
     return normVec;
 }
 
+//Taken from Real Time Rendering fourth edition
+
+/* Give in input the rayStartPoint, the rayNormalisedDir, the center of the disc, the disc width and disc height,
+ it approximates the disc with a parallelepiped OBB with a squared base (discWidth*discWidth) and height equal 
+ to the disc height and returns a boolean indicating if a box is centerd and the distance to the clicked object 
+ (if we do not hit any object obviously the distance is setted to 0) */
 function boxHitTest(rayStartPoint, rayNormalisedDir, discCenter, discWidth, discHeight) {
     var tmin = -Infinity;
     var tmax = Infinity;
