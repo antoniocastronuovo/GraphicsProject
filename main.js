@@ -13,7 +13,7 @@ var ambientLightUpColor = [0.2, 0.2, 0.2];      //Upper color of the Ambient
 //Global variables for the spot lights
 var spotLightDirection = [0.0, 1.0, 0.0];  
 var spotLightColor = [0.0, 0.0, 0.0]; //It will become green only on victory
-var positionSpot = [4.53, 10.0, 0.0]; //Over the third rod
+var spotLightPosition = [4.53, 10.0, 0.0]; //Over the third rod, this position is in world coordinates
 var targetSpot = 5;
 var decay = 2;
 var coneInSpot = 0.5; //% wrt cone out
@@ -205,10 +205,11 @@ function main() {
         //Send uniforms of lights to GPU
         gl.uniform3fv(lightColorHandle,  lightColor); //light color
         gl.uniform3fv(lightDirectionHandle,  lightDirection); //light direction
-        //Spot light
+        /* Spot light uniforms: spot light position is already expressed in world coordinates,
+         * no need to transform it. Same for the light direction and the eye position. */
         gl.uniform3fv(spotLightDirectionHandle, spotLightDirection);
         gl.uniform3fv(spotLightColorHandle,spotLightColor);
-        gl.uniform3fv(spotLightPositionHandle, positionSpot);
+        gl.uniform3fv(spotLightPositionHandle, spotLightPosition);
         gl.uniform1f(targetHandle,targetSpot);
         gl.uniform1f(coneInHandle,coneInSpot);
         gl.uniform1f(coneOutHandle,coneOutSpot);
@@ -242,7 +243,7 @@ function main() {
             gl.uniformMatrix4fv(normalMatrixPositionHandle, gl.FALSE, utils.invertMatrix(utils.transposeMatrix(nodes[i].worldMatrix)));
         
             //This must be done for each object mesh
-            gl.bindBuffer(gl.ARRAY_BUFFER, nodes[i].drawInfo.mesh.vertexBuffer);
+            gl.bindBuffer(gl.ARRAY_BUFFER, nodes[i].drawInfo.mesh.vertexBuffer); //local coordinates
             gl.vertexAttribPointer(positionAttributeLocation, nodes[i].drawInfo.mesh.vertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
             gl.bindBuffer(gl.ARRAY_BUFFER, nodes[i].drawInfo.mesh.normalBuffer);
             gl.vertexAttribPointer(normalAttributeLocation, nodes[i].drawInfo.mesh.normalBuffer.itemSize, gl.FLOAT, false, 0, 0);

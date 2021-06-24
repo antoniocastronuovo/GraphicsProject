@@ -2,11 +2,11 @@
 
 precision mediump float;
 
-in vec3 fsNormal;
-in vec3 fsPosition;
-in vec2 uvFS;
+in vec3 fsNormal; //normals to pass to the fs, from object space to world
+in vec3 fsPosition; //vertex positions to pass to the fs, from object space to world space
+in vec2 uvFS; //UV coordinates
 
-out vec4 outColor;
+out vec4 outColor; //final output color
 
 uniform vec3 mDiffColor; //material diffuse color 
 uniform vec3 lightDirection; // directional light direction vec
@@ -16,13 +16,13 @@ uniform vec3 ambientLightUpColor;		  // For hemispheric ambient, this is the col
 uniform vec3 ambientLightLowColor;	  // For hemispheric ambient, this is the bottom color
 
 //Parameters for the spot light
+uniform vec3 spotLightPosition;
 uniform vec3 spotLightDirection; 
 uniform vec3 spotLightColor;
 uniform float spotConeOut;
-uniform float spotConeIn;
+uniform float spotConeIn; //% wrt spotConeOut
 uniform float target;
 uniform float decay;
-uniform vec3 spotLightPosition;
 
 uniform vec3 eyePos;          //Eye position = camera position
 
@@ -34,6 +34,7 @@ vec3 diffuseBRDF(vec3 matDiffuseColor, vec3 lColor, vec3 lDir, vec3 normalVec) {
   return texColor.rgb * matDiffuseColor * lColor * clamp(dot(-lDir, normalVec), 0.0, 1.0);
 }
 
+//Computer Phong specular component
 vec3 specularBRDF(vec3 lightDir, vec3 lightColor, vec3 normalVec, vec3 eyeDirVec) {
   vec3 refVec = -reflect(lightDir, normalVec);
   vec3 specular = pow(clamp(dot(eyeDirVec, refVec), 0.0, 1.0), 128.0) * lightColor;
