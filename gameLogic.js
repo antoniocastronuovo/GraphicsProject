@@ -178,13 +178,9 @@ Game.prototype.move = function() {
             }
         }
         //Once finished the movement
-        
         var newWorldMatrix = utils.multiplyMatrices(translationMatrix, oldWorldMatrix);
         this.movingDisc.node.updateWorldMatrix(newWorldMatrix);
         this.movingDisc.center = [this.movingDisc.center[0] + dx, this.movingDisc.center[1] + dy, this.movingDisc.center[2] + dz];
-        
-        
-        
     } 
     // NO MOVING 
 

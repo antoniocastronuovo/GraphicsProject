@@ -126,13 +126,11 @@ function setMouseListeners(){
             var selectedRod = getSelectedRod(clickedDisc.center);
 
             if(selectedRod != null  && game.isMoveAllowed(game.rods.indexOf(fromRod)+1,game.rods.indexOf(selectedRod)+1)){
-                offset = 0.7;
-                if(selectedRod.discs.indexOf(game.discs[0])==0){ //if on the pile there is the largest disc
-                    offset = game.discs[0].height;
-                }
-                var finalPoisition = utils.multiplyMatrices(utils.MakeTranslateMatrix(selectedRod.center[0] - preMovementCenter[0],selectedRod.getDiscStackHeight() + offset - preMovementCenter[1], 0.0),preMovementWorldMatrix);
+                //Vertical distance the disc have to follow: source rod stack height - disc height - destination rod stack height
+                var verticalShift = fromRod.getDiscStackHeight() - clickedDisc.height - selectedRod.getDiscStackHeight();
+                var finalPoisition = utils.multiplyMatrices(utils.MakeTranslateMatrix(selectedRod.center[0] - preMovementCenter[0], -verticalShift, 0.0), preMovementWorldMatrix);
                 clickedDisc.node.updateWorldMatrix(finalPoisition);
-                clickedDisc.center = [selectedRod.center[0],selectedRod.getDiscStackHeight() + offset, 0.0];
+                clickedDisc.center = [selectedRod.center[0], preMovementCenter[1] - verticalShift, 0.0];
                 game.initMove(game.rods.indexOf(fromRod)+1,game.rods.indexOf(selectedRod)+1,false);
                 game.checkWin();
                 enableMoveElements();

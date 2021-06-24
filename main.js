@@ -14,7 +14,7 @@ var ambientLightUpColor = [0.2, 0.2, 0.2];      //Upper color of the Ambient
 var spotLightDirection = [0.0, 1.0, 0.0];  
 var spotLightColor = [0.0, 0.0, 0.0]; //It will become green only on victory
 var spotLightPosition = [4.53, 10.0, 0.0]; //Over the third rod, this position is in world coordinates
-var targetSpot = 5;
+var targetSpot = 7;
 var decay = 2;
 var coneInSpot = 0.5; //% wrt cone out
 var coneOutSpot = 30; //this is in degree
@@ -25,7 +25,7 @@ var cy = 0.0; //Pos y of the camera
 var cz = 10.0; //Pos z of the camera
 var elevation = -20.0; //0.0 to see perpendicular
 var angle = 0.0; //Angle of the camera
-var lookRadius = 15.0;
+var lookRadius = 10.0; //Zoom factor
 
 //Scaling parameters
 var scaling = 0.3; //Scaling of the models
