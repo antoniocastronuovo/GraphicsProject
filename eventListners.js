@@ -8,7 +8,7 @@
         game.initMove(moveFrom.value,moveTo.value);
     }, false);
 
-    //Set the listener to the play btn
+    //Set the listener to the reset btn
     var resetBtn = document.getElementById("reset_btn");
     resetBtn.addEventListener("click", (e) => {
         var numOfDiscs = parseInt(document.getElementById("drop-down-difficulty").value);
@@ -20,12 +20,12 @@
         game = new Game(nodes.slice(2, numOfDiscs + 2));
         game.scaleMesurements(scaling);
 
+        // Shut down the spot light of the victory
         spotLightColor = [0.0, 0.0, 0.0];
         enableMoveElements();
 
     }, false);
     
-    //hideSameLocation();
     setCameraListeners();
     setAmbientColorsListeners();
     setMouseListeners();
@@ -95,22 +95,24 @@ function setMouseListeners(){
     var isTopDisc;
     
     function doMouseDown(event) {
-        clickedDisc = myOnMouseDown(event);
-        lastMouseX = event.pageX;
-        lastMouseY = event.pageY;
-        
-        if(clickedDisc != null) {
-            mouseState = true;
-            preMovementWorldMatrix = clickedDisc.node.worldMatrix;
-            preMovementCenter = clickedDisc.center;
-            game.rods.forEach(rod => {
-              rod.discs.forEach(disc => {
-                    if(clickedDisc === disc){
-                        fromRod = rod;
-                        isTopDisc = (fromRod.discs.indexOf(clickedDisc) === fromRod.discs.length - 1);
-                    }
+        if(!game.discIsMoving){
+            clickedDisc = getClickedDisc(event);
+            lastMouseX = event.pageX;
+            lastMouseY = event.pageY;
+            
+            if(clickedDisc != null) {
+                mouseState = true;
+                preMovementWorldMatrix = clickedDisc.node.worldMatrix;
+                preMovementCenter = clickedDisc.center;
+                game.rods.forEach(rod => {
+                rod.discs.forEach(disc => {
+                        if(clickedDisc === disc){
+                            fromRod = rod;
+                            isTopDisc = (fromRod.discs.indexOf(clickedDisc) === fromRod.discs.length - 1);
+                        }
+                    });
                 });
-            });
+            }
         }
     }
 
@@ -122,7 +124,6 @@ function setMouseListeners(){
 
         if(clickedDisc!=null) {
             var selectedRod = getSelectedRod(clickedDisc.center);
-            
 
             if(selectedRod != null  && game.isMoveAllowed(game.rods.indexOf(fromRod)+1,game.rods.indexOf(selectedRod)+1)){
                 offset = 0.7;
@@ -134,6 +135,7 @@ function setMouseListeners(){
                 clickedDisc.center = [selectedRod.center[0],selectedRod.getDiscStackHeight() + offset, 0.0];
                 game.initMove(game.rods.indexOf(fromRod)+1,game.rods.indexOf(selectedRod)+1,false);
                 game.checkWin();
+                enableMoveElements();
             }else{
                 //IF WRONG RELEASE POSITION
                 clickedDisc.node.updateWorldMatrix(preMovementWorldMatrix);
@@ -225,61 +227,6 @@ function setAmbientColorsListeners() {
     
 }
 
-function hideSameLocation(){
-    var moveFrom = document.getElementById("drop-down-from");
-    var moveTo = document.getElementById("drop-down-to");
-
-    //set all the unfeasible options of the moveTo to invisible
-    for (let  j = 0; j < moveTo.options.length ; j++) {
-        if (moveTo.options[j].value === moveFrom.value) {
-            moveTo.options[j].style.display = "none";
-            break;
-        }
-    }
-
-    //set all the unfeasible options of the moveFrom to invisible
-    for (let  j = 0; j < moveFrom.options.length ; j++) {
-        if (moveFrom.options[j].value === moveTo.value) {
-            moveFrom.options[j].style.display = "none";
-            break;
-        }
-    }
-
-    moveFrom.addEventListener("change", (e) => {
-
-        //set all the options of the moveTo to visible
-        for(let j=0; j < moveFrom.options.length ;j++){
-            moveTo.options[j].style.display= "block";
-        }
-        
-        
-        //set all the unfeasible options of the moveTo to invisible
-        for (let  j = 0; j < moveTo.options.length ; j++) {
-            if (moveTo.options[j].value === moveFrom.value) {
-                moveTo.options[j].style.display = "none";
-                break;
-            }
-        }
-    });
-
-    moveTo.addEventListener("change", (e) => {
-                
-        //set all the options of the moveFrom to visible
-        for(let j=0; j < moveTo.options.length ;j++){
-            moveFrom.options[j].style.display= "block";
-        }
-        
-        //set all the unfeasible options of the moveFrom to invisible
-        for (let  j = 0; j < moveFrom.options.length ; j++) {
-            if (moveFrom.options[j].value === moveTo.value) {
-                moveFrom.options[j].style.display = "none";
-                break;
-            }
-        }
-    });
-
-}
-
 function unableMoveElements() {
     var moveFrom = document.getElementById("drop-down-from");
     var moveTo = document.getElementById("drop-down-to");
@@ -288,8 +235,6 @@ function unableMoveElements() {
     moveFrom.disabled = true;
     moveTo.disabled = true;
     move.disabled = true;
-
-
 }
 
 function enableMoveElements() {

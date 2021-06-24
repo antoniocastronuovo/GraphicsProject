@@ -89,6 +89,8 @@ Game.prototype.initMove = function(_fromRod, _toRod, _startMovement = true) {
     //Set game variables
     this.fromRod = _fromRod;
     this.toRod = _toRod;
+
+    // if startMovement is true, the movement comes from the gui selectors, otherwise from the mouse dragging
     this.startMovement = _startMovement;
 
     if(this.isMoveAllowed(this.fromRod, this.toRod)) {
@@ -103,6 +105,9 @@ Game.prototype.initMove = function(_fromRod, _toRod, _startMovement = true) {
             //Update discs positions
             this.rods[this.fromRod - 1].discs.pop();
             this.rods[this.toRod - 1].discs.push(this.movingDisc);
+            
+            // when a disc is moving we can't move another move
+            unableMoveElements();
     }else{
         displayAlert(true,"danger","Remeber that you can move discs only on bigger ones");
     }
@@ -164,7 +169,10 @@ Game.prototype.move = function() {
                 this.shiftDistance = 0.0;
                 this.fromRod = 0;
                 this.toRod = 0;
-
+                
+                //now we can move another disc
+                enableMoveElements();
+                
                 //Check win
                 this.checkWin();
             }
@@ -174,6 +182,9 @@ Game.prototype.move = function() {
         var newWorldMatrix = utils.multiplyMatrices(translationMatrix, oldWorldMatrix);
         this.movingDisc.node.updateWorldMatrix(newWorldMatrix);
         this.movingDisc.center = [this.movingDisc.center[0] + dx, this.movingDisc.center[1] + dy, this.movingDisc.center[2] + dz];
+        
+        
+        
     } 
     // NO MOVING 
 
