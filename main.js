@@ -272,7 +272,7 @@ function loadTexture(textureIndex) {
 
     // Asynchronously load an image
     var imgtx = new Image();
-    if(textureIndex === 1) imgtx.src = assetDir + "texture" + textureIndex + ".png";
+    if(textureIndex == 1) imgtx.src = assetDir + "texture" + textureIndex + ".png";
     else imgtx.src = assetDir + "texture" + textureIndex + ".jpg";  
 
     imgtx.onload = function() {
