@@ -132,8 +132,8 @@ function setMouseListeners(){
                 clickedDisc.node.updateWorldMatrix(finalPoisition);
                 clickedDisc.center = [selectedRod.center[0], preMovementCenter[1] - verticalShift, 0.0];
                 game.initMove(game.rods.indexOf(fromRod)+1,game.rods.indexOf(selectedRod)+1,false);
-                game.checkWin();
                 enableMoveElements();
+                game.checkWin();
             }else{
                 //IF WRONG RELEASE POSITION
                 clickedDisc.node.updateWorldMatrix(preMovementWorldMatrix);
