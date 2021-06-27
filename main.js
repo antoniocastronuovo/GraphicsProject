@@ -2,19 +2,19 @@
 
 var program;    // Program composed by the two shaders
 var gl;         // The WebGL rendering context associated to the canvas
-var shaderDir; 
-var baseDir;
-var assetDir;
+var shaderDir;  // directory of the shaders
+var baseDir;    // base directory of the project
+var assetDir;   // directory of the shaders
 
 //Global variables for the ambient lighting
 var ambientLightLowColor = [0.0, 0.0, 0.0];     //Lower color of the Ambient
 var ambientLightUpColor = [0.2, 0.2, 0.2];      //Upper color of the Ambient
 
 //Global variables for the spot lights
-var spotLightDirection = [0.0, 1.0, 0.0];  
-var spotLightColor = [0.0, 0.0, 0.0]; //It will become green only on victory
+var spotLightDirection = [0.0, 1.0, 0.0];  // remember that the direction of a light is from the object to the light source
+var spotLightColor = [0.0, 0.0, 0.0];      // It will become green only on victory
 var spotLightPosition = [4.53, 10.0, 0.0]; //Over the third rod, this position is in world coordinates
-var targetSpot = 7;
+var targetSpot = 7; 
 var decay = 2;
 var coneInSpot = 0.5; //% wrt cone out
 var coneOutSpot = 30; //this is in degree
@@ -28,7 +28,7 @@ var angle = 0.0; //Angle of the camera
 var lookRadius = 10.0; //Zoom factor
 
 //Scaling parameters
-var scaling = 0.3; //Scaling of the models
+var scaling = 0.3;     //Scaling of the models
 var deltaFactor = 375; //Factor to manage the shift of the discs with the mouse
 
 //Transformation matrices
@@ -67,16 +67,16 @@ async function init(){
 
     //Clear the canvas and enable depth testing
     utils.resizeCanvasToDisplaySize(gl.canvas);
-    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-    gl.clearColor(0.85, 0.85, 0.85, 1.0);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    gl.enable(gl.DEPTH_TEST);
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);  // Sets the viewport
+    gl.clearColor(0.85, 0.85, 0.85, 1.0);                  // Gives the color to the canvas
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);   // Clears the buffers of the canvas
+    gl.enable(gl.DEPTH_TEST);                              // Enables depth testing
 
     /* await wait since the asynchronous funtion loadFiles is completed and when 
      * it is completed use the callback function passed as second argument.
      * Function createShader and createProgram do what we have seen in 03*/
     await utils.loadFiles([shaderDir + 'vs.glsl', shaderDir + 'fs.glsl'], function (shaderText) {
-      var vertexShader = utils.createShader(gl, gl.VERTEX_SHADER, shaderText[0]); //create vertex shader
+      var vertexShader = utils.createShader(gl, gl.VERTEX_SHADER, shaderText[0]);     //create vertex shader
       var fragmentShader = utils.createShader(gl, gl.FRAGMENT_SHADER, shaderText[1]); //create fragment shader
       program = utils.createProgram(gl, vertexShader, fragmentShader); //create program global var
     });

@@ -61,7 +61,7 @@ void main() {
   //Compute BRDF function = diffuse + specular component
   vec3 diffuse = diffuseBRDF(mDiffColor, lightColor, lightDirection, nNormal);
   vec3 eyeDir = -normalize(eyePos - fsPosition);
-  vec3 specular = specularBRDF(lightDirection, vec3(1.0,1.0,1.0), nNormal, eyeDir); //0.76, 0.58, 0.40
+  vec3 specular = specularBRDF(lightDirection, vec3(1.0,1.0,1.0), nNormal, eyeDir); // 1.0,1.0,1.0 is the color of the reflection
   
   //Compute hemispheric lighting  
   vec3 hemisphericAmbient = hemisphericAmbient(ambientLightUpColor,ambientLightLowColor,vec3(0.0,1.0,0.0),nNormal);

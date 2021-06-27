@@ -17,7 +17,6 @@ function getClickedDisc(ev){
         left += canvas.offsetLeft;
         canvas = canvas.offsetParent;
     }
-    console.log("left "+left+" top "+top);
 
     // x and y are the coordinates of the click with respect to the canvas top-left corner of the canvas
     var x = ev.clientX - left;
