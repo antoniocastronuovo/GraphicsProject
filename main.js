@@ -176,7 +176,7 @@ function main() {
     var spotLightColorHandle = gl.getUniformLocation(program, 'spotLightColor'); //For the spot light color
     var targetHandle = gl.getUniformLocation(program, 'target');
     var decayHandle = gl.getUniformLocation(program, 'decay');
-    var spotLightPositionHandle = gl.getUniformLocation(program, 'spotLightPosition');
+    var spotLightPositionHandle = gl.getUniformLocation(program, 'spotLightPosition'); // starting point of the cone
     var coneOutHandle = gl.getUniformLocation(program, 'spotConeOut');
     var coneInHandle = gl.getUniformLocation(program, 'spotConeIn');
     //Ambient lightining
